@@ -227,11 +227,15 @@ var SPECCHIO = [
     {t: 'Cerco un video o chiedo nei gruppi, e a volte trovo risposte diverse', p: {Ca: 1, O: 1}},
     {t: 'Lo smonto finché non riesco a spiegarlo a qualcuno', p: {}}
   ]},
-  {id: 'S4', q: 'Come ripassi?', o: [
-    {t: 'Rileggo e sottolineo', p: {R: 2}},
+  /* scelta multipla: per ogni pilastro conta il valore più alto tra le scelte, meno 1 se
+     c'è anche un modo attivo di ripassare (buono) */
+  {id: 'S4', q: 'Come ripassi?', multi: true, o: [
+    {t: 'Rileggo più volte', p: {R: 2}},
     {t: 'Rifaccio riassunti e schemi', p: {R: 2}},
     {t: 'Ripeto ad alta voce', p: {R: 1}},
-    {t: 'Mi faccio domande senza guardare il libro', p: {}}
+    {t: 'Mi faccio domande senza guardare il libro', p: {}, buono: true},
+    {t: 'Mi esercito con quiz e simulazioni', p: {}, buono: true},
+    {t: 'Ripeto con qualcuno', p: {}, buono: true}
   ]},
   {id: 'S5', q: 'Nell\'ultima settimana, quante domande d\'esame hai fatto col tempo che corre?', o: [
     {t: 'Nessuna', p: {R: 2}},
@@ -500,6 +504,17 @@ function deriva() {
   PASSI.forEach(function (p, idx) {
     var i = S.scelte[idx];
     if (i == null || !p.q || !p.q.o) return;
+    if (Array.isArray(i)) {
+      if (!i.length) return;
+      var sel = i.map(function (j) { return p.q.o[j]; });
+      S.risposte[p.q.id] = sel.map(function (o) { return o.t; }).join(' · ');
+      var buono = sel.some(function (o) { return o.buono; });
+      ['O', 'Ca', 'R'].forEach(function (k) {
+        var v = Math.max.apply(null, sel.map(function (o) { return o.p[k] || 0; }));
+        S.pil[k] += buono ? Math.max(0, v - 1) : v;
+      });
+      return;
+    }
     var o = p.q.o[i];
     S.risposte[p.q.id] = o.t;
     if (p.tipo === 'scelta') S.tag = S.tag.concat(o.tag);
@@ -547,7 +562,8 @@ function intro() {
 }
 
 function domandaScelta(p) {
-  var q = p.q, lettere = 'ABCDE', qui = passo;
+  if (p.q.multi) return domandaMulti(p);
+  var q = p.q, lettere = 'ABCDEF', qui = passo;
   schermo([
     nav(),
     el('p', {class: 'occhiello', text: p.blocco}),
@@ -558,6 +574,32 @@ function domandaScelta(p) {
         el('span', {class: 'l', text: lettere[i]}), el('span', {text: o.t})
       ]);
     }))
+  ], quota());
+}
+
+function domandaMulti(p) {
+  var q = p.q, lettere = 'ABCDEF', qui = passo;
+  var scelte = (S.scelte[qui] || []).slice();
+  var btnAvanti = el('button', {class: 'btn', type: 'button', text: 'Avanti', onclick: function () { S.scelte[qui] = scelte.slice().sort(); avanti(); }});
+  function aggiorna() { btnAvanti.disabled = !scelte.length; }
+  var bottoni = q.o.map(function (o, i) {
+    var b = el('button', {class: 'opz', type: 'button', 'aria-pressed': 'false', onclick: function () {
+      var k = scelte.indexOf(i);
+      if (k < 0) scelte.push(i); else scelte.splice(k, 1);
+      segna(b, i); aggiorna();
+    }}, [el('span', {class: 'l', text: lettere[i]}), el('span', {text: o.t})]);
+    segna(b, i);
+    return b;
+  });
+  function segna(b, i) { var on = scelte.indexOf(i) >= 0; b.className = 'opz' + (on ? ' scelta' : ''); b.setAttribute('aria-pressed', String(on)); }
+  aggiorna();
+  schermo([
+    nav(),
+    el('p', {class: 'occhiello', text: p.blocco}),
+    el('h2', {text: q.q}),
+    el('p', {class: 'lead', text: 'Puoi sceglierne più di una.'}),
+    el('div', {class: 'opzioni', role: 'group', 'aria-label': q.q}, bottoni),
+    el('div', {style: 'margin-top:18px'}, [btnAvanti])
   ], quota());
 }
 
