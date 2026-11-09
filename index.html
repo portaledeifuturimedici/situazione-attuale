@@ -797,6 +797,7 @@ function risultato(R) {
     }))
   ]);
   if (R.facileSbagliata) bv.appendChild(el('p', {class: 'nota', text: 'Hai sbagliato la domanda facile di ' + R.facileSbagliata.mat.toLowerCase() + '. Le estreme le sbagliano quasi tutti, le facili no: è lì che si perdono i punti che poi mancano in graduatoria.'}));
+  if (S.tempoProva != null) bv.appendChild(el('p', {class: 'nota', text: S.provaScaduta ? 'Il tempo della prova (' + mmss(DURATA_PROVA) + ') è finito prima della consegna.' : 'Hai consegnato la prova dopo ' + mmss(S.tempoProva) + ' su ' + mmss(DURATA_PROVA) + '.'}));
   blocchi.push(bv);
 
   /* il buco */
