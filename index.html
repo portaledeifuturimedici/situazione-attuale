@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests; base-uri 'self'; object-src 'none'; form-action 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Il test dei 97 secondi | Portale dei Futuri Medici</title>
+<meta name="description" content="Nove domande d'esame con il tempo vero, più i conti sulle ore che ti restano. In sette minuti scopri se il tuo metodo regge il semestre filtro di Medicina.">
+<meta property="og:title" content="Il test dei 97 secondi: il tuo metodo regge il 10 dicembre?">
+<meta property="og:description" content="Nove domande d'esame con il tempo vero, più i conti sulle ore che ti restano. In sette minuti scopri se il tuo metodo regge il semestre filtro.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Portale dei Futuri Medici">
+<meta property="og:locale" content="it_IT">
+<meta property="og:image" content="https://portaledeifuturimedici.com/appunti/og.png">
+<meta property="og:url" content="https://portaledeifuturimedici.com/situazione-attuale/">
+<link rel="canonical" href="https://portaledeifuturimedici.com/situazione-attuale/">
+<link rel="apple-touch-icon" href="/appunti/brand/apple-touch-icon.png">
+<meta name="theme-color" content="#14102A" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FBF7F0" media="(prefers-color-scheme: light)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='28' fill='%2314102A'/%3E%3Cg transform='translate(64,64) scale(1.03) translate(0,7.2)'%3E%3Cpath d='M -22,30 A 44,44 0 1 1 22,30' stroke='%23D2E8FB' stroke-width='13' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='0' cy='-22' r='9' fill='%23FFB23E'/%3E%3Ccircle cx='-16' cy='8' r='9' fill='%232BE0E0'/%3E%3Ccircle cx='16' cy='8' r='9' fill='%23C04BFF'/%3E%3C/g%3E%3C/svg%3E">
+<script>(function(){var d=document.documentElement,t='';try{var p=JSON.parse(localStorage.getItem('appunti-prefs')||'{}');
+t=(p.tema==='day'||p.tema==='night')?p.tema:(p.theme==='day'?'day':'');}catch(e){}
+if(!t&&window.matchMedia)t=matchMedia('(prefers-color-scheme: light)').matches?'day':'night';
+d.setAttribute('data-theme',t||'night');})();</script>
+<style>
+/* QUIZFUNNEL «IL TEST DEI 97 SECONDI» (9/11/2026). Pagina autonoma, stessi colori e
+   caratteri della landing /evento/. Domande e testi: docs/quizfunnel/*.md */
+:root,[data-theme=night]{
+  --bg:#14102A;--bg2:#100C23;--sup:#1E1842;--sup2:#272055;--ink:#EDE9FF;--muted:#A99FD0;--line:#362C60;
+  --bio:#3ED9A0;--chi:#7C93FF;--fis:#FF6BB0;--oro:#FFB23E;--ciano:#2BE0E0;
+  --ok:#78E060;--ko:#FF6B5C;
+  --cta:linear-gradient(120deg,#FFB23E 0%,#FF8F78 52%,#FF6BB0 100%);
+  --sans:"Archivo",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --r:18px;color-scheme:dark
+}
+[data-theme=day]{
+  --bg:#FBF7F0;--bg2:#F3ECE1;--sup:#FFFFFF;--sup2:#F8F3EB;--ink:#201B2E;--muted:#615A75;--line:#E4DACB;
+  --bio:#25805F;--chi:#3A4FA6;--fis:#C13E7A;--oro:#A85F00;--ciano:#0E7F86;
+  --ok:#23873F;--ko:#C9382A;color-scheme:light
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;min-height:100dvh;background:var(--bg);color:var(--ink);font:400 16.5px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+h1,h2,h3{margin:0;line-height:1.1;letter-spacing:-.02em;font-weight:800;text-wrap:balance}
+p{margin:0 0 12px}
+a{color:inherit}
+.testa{display:flex;align-items:center;gap:12px;max-width:640px;margin:0 auto;padding:14px 16px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:750;font-size:.95rem;margin-right:auto}
+.tema{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:transparent;cursor:pointer;font-size:17px}
+.barra{height:4px;background:var(--line);max-width:640px;margin:0 auto;border-radius:4px;overflow:hidden}
+.barra i{display:block;height:100%;width:0;background:var(--cta);transition:width .35s ease}
+main{max-width:640px;margin:0 auto;padding:22px 16px 60px}
+.schermo{animation:entra .32s ease both}
+@keyframes entra{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.schermo{animation:none}.barra i{transition:none}}
+.occhiello{font:600 12px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--oro);margin-bottom:12px}
+.lead{color:var(--muted);font-size:1.04rem}
+.nota{color:var(--muted);font-size:.88rem;margin-top:10px}
+h1{font-size:clamp(2.2rem,8vw,3.4rem);letter-spacing:-.035em;margin-bottom:16px}
+h1 em{font-style:normal;color:var(--oro)}
+h2{font-size:clamp(1.35rem,5vw,1.75rem);margin-bottom:18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;width:100%;padding:17px 24px;border:0;border-radius:999px;background:var(--cta);color:#14102A;font:750 1.04rem/1.2 var(--sans);text-decoration:none;cursor:pointer;box-shadow:0 14px 34px -14px rgba(255,130,120,.75);-webkit-tap-highlight-color:transparent}
+.btn:disabled{opacity:.55;cursor:default}
+.btn:focus-visible,.opz:focus-visible,.tema:focus-visible,.cont button:focus-visible{outline:3px solid var(--ciano);outline-offset:3px}
+.punti{list-style:none;padding:0;margin:18px 0 26px;display:grid;gap:10px}
+.punti li{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--sup);font-size:.97rem}
+.punti b{color:var(--oro);font-family:var(--mono);margin-right:6px}
+.opzioni{display:grid;gap:10px}
+.opz{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:15px 16px;border:1.5px solid var(--line);border-radius:14px;background:var(--sup);cursor:pointer;font-size:1rem;line-height:1.35;transition:border-color .15s,background .15s;-webkit-tap-highlight-color:transparent}
+.opz:hover{border-color:var(--muted)}
+.opz:active{background:var(--sup2)}
+.opz .l{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--line);font:700 .8rem/1 var(--mono);color:var(--muted)}
+.chip{display:inline-block;padding:4px 10px;border-radius:999px;font:700 .74rem/1.2 var(--mono);text-transform:uppercase;letter-spacing:.08em;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c);margin-right:6px}
+.c-fis{--c:var(--fis)}.c-bio{--c:var(--bio)}.c-chi{--c:var(--chi)}.c-oro{--c:var(--oro)}
+.timer{display:flex;align-items:center;gap:12px;margin:14px 0 18px}
+.timer .t{font:750 1.5rem/1 var(--mono);font-variant-numeric:tabular-nums;min-width:3.2ch}
+.timer .b{flex:1;height:8px;border-radius:8px;background:var(--line);overflow:hidden}
+.timer .b i{display:block;height:100%;width:100%;background:var(--bio);transform-origin:left;transition:background .3s}
+.timer.poco .t{color:var(--ko)}.timer.poco .b i{background:var(--ko)}
+.timer.meta .b i{background:var(--oro)}
+.domanda{font-size:1.14rem;line-height:1.45;font-weight:600;margin-bottom:18px}
+.seq{font:600 1.05rem/1.4 var(--mono);padding:12px 14px;border-radius:12px;background:var(--sup2);margin:0 0 16px;overflow-wrap:anywhere}
+.campo{display:flex;gap:10px;align-items:center;margin-bottom:16px}
+.campo input,.modulo input[type=text],.modulo input[type=email],.modulo input[type=tel]{width:100%;padding:15px 16px;border:1.5px solid var(--line);border-radius:14px;background:var(--sup);font-size:1.05rem}
+.campo input:focus,.modulo input:focus{outline:none;border-color:var(--ciano)}
+.campo span{font:600 1rem var(--mono);color:var(--muted);white-space:nowrap}
+.cursore{margin:10px 0 26px}
+.cursore output{display:block;text-align:center;font:800 3.4rem/1 var(--mono);color:var(--oro);margin-bottom:14px}
+.cursore input{width:100%;accent-color:var(--oro);height:32px}
+.cursore .estremi{display:flex;justify-content:space-between;color:var(--muted);font-size:.85rem}
+.conts{display:grid;gap:14px;margin-bottom:22px}
+.cont{border:1px solid var(--line);border-radius:var(--r);background:var(--sup);padding:14px}
+.cont .riga{display:flex;align-items:center;gap:10px}
+.cont .riga h3{font-size:1.05rem;margin-right:auto}
+.cont button{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);background:var(--sup2);font:700 1.3rem/1 var(--sans);cursor:pointer}
+.cont output{min-width:2ch;text-align:center;font:750 1.4rem/1 var(--mono)}
+.cont ol{margin:10px 0 0;padding-left:22px;font-size:.86rem;color:var(--muted)}
+.cont ol li.si{color:var(--ink);font-weight:600}
+.modulo label{display:block;font-weight:650;font-size:.92rem;margin:0 0 6px}
+.modulo .f{margin-bottom:14px}
+.modulo input[aria-invalid=true]{border-color:var(--ko)}
+.consent{display:flex;gap:12px;align-items:flex-start;margin:6px 0 18px;font-size:.84rem;line-height:1.5;color:var(--muted);cursor:pointer}
+.consent input{flex:none;width:22px;height:22px;margin:1px 0 0;accent-color:var(--fis)}
+.msg{min-height:1.4em;font-size:.9rem;color:var(--ko);margin-top:10px}
+.trappola{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+/* risultato */
+.blocco{border:1px solid var(--line);border-radius:var(--r);background:var(--sup);padding:20px 18px;margin-bottom:16px}
+.blocco h2{font-size:1.3rem;margin-bottom:10px}
+.blocco .occhiello{margin-bottom:8px}
+.due{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:6px 0 14px}
+.num{border-radius:14px;background:var(--sup2);padding:14px;text-align:center}
+.num b{display:block;font:800 2.4rem/1 var(--mono);font-variant-numeric:tabular-nums}
+.num span{display:block;margin-top:6px;font:600 .7rem/1.3 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.mat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.mat div{border-radius:12px;padding:10px;text-align:center;background:color-mix(in srgb,var(--c) 14%,transparent)}
+.mat b{display:block;font:750 1.25rem/1 var(--mono);color:var(--c)}
+.mat span{font-size:.78rem;color:var(--muted)}
+.grande{font:800 clamp(3rem,15vw,4.4rem)/1 var(--mono);color:var(--oro);letter-spacing:-.04em;margin:4px 0 8px}
+.errore{border-left:3px solid var(--ko);padding:10px 0 2px 14px;margin:14px 0 4px}
+.errore .q{font-weight:600;margin-bottom:8px}
+.errore .tua{color:var(--ko);font-weight:650}
+.errore .giusta{color:var(--ok);font-weight:650}
+.passo{border:1.5px solid var(--oro)}
+.passo .quando{font:700 .8rem/1.3 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--oro);margin-bottom:8px}
+.piede{max-width:640px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:.78rem}
+.piede a{color:var(--muted)}
+</style>
+</head>
+<body data-crm="">
+<header class="testa">
+  <a class="logo" href="/" aria-label="Portale dei Futuri Medici, vai alla home"><svg width="30" height="30" viewBox="0 0 128 128" aria-hidden="true" focusable="false"><rect width="128" height="128" rx="28" fill="#14102A"/><g transform="translate(64,64) scale(1.03) translate(0,7.2)"><path d="M -22,30 A 44,44 0 1 1 22,30" stroke="#D2E8FB" stroke-width="13" fill="none" stroke-linecap="round"/><circle cx="0" cy="-22" r="9" fill="#FFB23E"/><circle cx="-16" cy="8" r="9" fill="#2BE0E0"/><circle cx="16" cy="8" r="9" fill="#C04BFF"/></g></svg><span>Portale dei Futuri Medici</span></a>
+  <button class="tema" type="button" id="tema" aria-label="Cambia tema chiaro o scuro">◐</button>
+</header>
+<div class="barra" aria-hidden="true"><i id="avanz"></i></div>
+<main id="app" aria-live="polite"></main>
+<footer class="piede">Titolare del trattamento dei dati: Strategic Virtus Global LLC · <a href="/appunti/privacy.html">Informativa privacy</a></footer>
+<noscript><p style="max-width:640px;margin:0 auto;padding:16px">Il test funziona solo con JavaScript attivo.</p></noscript>
+
+<script>
+(function () {
+'use strict';
+
+/* ================= DATI (fonte: docs/quizfunnel/*.md) ================= */
+
+var APPELLI = [
+  {data: new Date(2026, 11, 10), nome: '10 dicembre'},
+  {data: new Date(2027, 0, 11), nome: '11 gennaio'}
+];
+var ORE_PER_CFU = 15;
+var EVENTO = 'https://portaledeifuturimedici.com/evento/';
+var CRM_ATTESA_MS = 8000;
+
+/* Blocco 1 · Chi sei */
+var PROFILO = [
+  {id: 'P1', q: 'È la prima volta che affronti il semestre filtro?', o: [
+    {t: 'Sì, è la prima volta', tag: ['qf-primo-tentativo']},
+    {t: 'No, ci ho già provato e non è andata per poco', tag: ['qf-ripetente', 'qf-ripetente-soffio']},
+    {t: 'No, ci ho già provato e non è andata per niente', tag: ['qf-ripetente']}
+  ]},
+  {id: 'P2', q: 'Che scuola hai fatto?', o: [
+    {t: 'Liceo scientifico', tag: ['qf-scuola-scientifico']},
+    {t: 'Liceo classico', tag: ['qf-scuola-senza-basi']},
+    {t: 'Linguistico, scienze umane o un altro liceo', tag: ['qf-scuola-senza-basi']},
+    {t: 'Istituto tecnico o professionale', tag: ['qf-scuola-senza-basi']},
+    {t: 'Ho già un titolo universitario o lavoro in sanità', tag: ['qf-adulto']}
+  ]},
+  {id: 'P3', q: 'Come sono le tue giornate adesso?', o: [
+    {t: 'Studio e basta', tag: ['qf-tempo-pieno']},
+    {t: 'Studio e lavoro', tag: ['qf-lavoratore']},
+    {t: 'Studio e passo ore in viaggio per le lezioni', tag: ['qf-pendolare']},
+    {t: 'Ho ripreso a studiare dopo anni, tra lavoro e altro', tag: ['qf-adulto', 'qf-lavoratore']}
+  ]},
+  {id: 'P4', q: 'Rispetto alle lezioni, a che punto sei?', o: [
+    {t: 'Non ho ancora cominciato davvero', tag: ['qf-fermo']},
+    {t: 'Ho cominciato ma sono indietro', tag: ['qf-indietro']},
+    {t: 'Sono più o meno in pari', tag: ['qf-in-pari']},
+    {t: 'Sono avanti', tag: ['qf-avanti']}
+  ]}
+];
+
+/* Blocco 2 · Lo specchio (O organizzarsi, Ca capire, R ricordare) */
+var SPECCHIO = [
+  {id: 'S1', q: 'Quando ti metti a studiare, come scegli cosa fare?', o: [
+    {t: 'Riprendo da dove ero rimasto', p: {O: 1}},
+    {t: 'Decido sul momento, in base a cosa mi preoccupa di più', p: {O: 2}},
+    {t: 'Seguo le lezioni della settimana e vado dietro a quelle', p: {O: 1}},
+    {t: 'Seguo un piano scritto, con argomenti e date fino all\'esame', p: {}}
+  ]},
+  {id: 'S2', q: 'Su quante fonti studi la stessa materia?', o: [
+    {t: 'Una sola', p: {}},
+    {t: 'Due', p: {}},
+    {t: 'Tre o più: libro, appunti, video, materiale comprato', p: {O: 1, Ca: 1}},
+    {t: 'Cambia ogni volta, non ho ancora capito quale usare', p: {O: 2}}
+  ]},
+  {id: 'S3', q: 'Quando un argomento non ti è chiaro, cosa fai?', o: [
+    {t: 'Lo rileggo finché non mi entra', p: {Ca: 2}},
+    {t: 'Lo salto e spero che all\'esame non esca', p: {Ca: 2}},
+    {t: 'Cerco un video o chiedo nei gruppi, e spesso trovo risposte diverse', p: {Ca: 1, O: 1}},
+    {t: 'Lo smonto finché non riesco a spiegarlo a qualcuno', p: {}}
+  ]},
+  {id: 'S4', q: 'Come ripassi?', o: [
+    {t: 'Rileggo e sottolineo', p: {R: 2}},
+    {t: 'Rifaccio riassunti e schemi', p: {R: 2}},
+    {t: 'Ripeto ad alta voce', p: {R: 1}},
+    {t: 'Mi faccio domande senza guardare il libro', p: {}}
+  ]},
+  {id: 'S5', q: 'Nell\'ultima settimana, quante domande d\'esame hai fatto col tempo che corre?', o: [
+    {t: 'Nessuna', p: {R: 2}},
+    {t: 'Meno di 20', p: {R: 1}},
+    {t: 'Tra 20 e 100', p: {}},
+    {t: 'Più di 100', p: {}}
+  ]}
+];
+
+/* Blocco 3 · La prova. m = crocette, c = completamento.
+   Per le crocette: ok = risposta giusta, e = cosa dice l'errore (seconda persona). */
+var TEMPO_SCADUTO = 'Il tempo è finito prima della risposta. 97 secondi sembrano tanti finché non servono due passaggi di fila.';
+var PROVA = [
+  {id: 'F1', mat: 'Fisica', c: 'c-fis', liv: 'facile', pt: 1, t: 'm',
+   q: '72 km/h corrispondono a:',
+   o: [
+    {t: '7,2 m/s', e: 'Hai diviso per 10, a occhio. Il fattore giusto è 3,6.'},
+    {t: '20 m/s', ok: true},
+    {t: '36 m/s', e: 'Hai dimezzato: ricordavi che il numero scende, non di quanto.'},
+    {t: '72 m/s', e: 'Non hai convertito: le unità di misura non le hai controllate.'},
+    {t: '259 m/s', e: 'Hai moltiplicato per 3,6 invece di dividere: la regola la ricordi a memoria, ma non sai da dove viene il 3,6.'}
+   ],
+   x: 'Per passare da km/h a m/s si divide per 3,6: 72 / 3,6 = 20 m/s.'},
+  {id: 'B1', mat: 'Biologia', c: 'c-bio', liv: 'facile', pt: 1, t: 'm',
+   q: 'Il codone di inizio della traduzione è:',
+   o: [
+    {t: 'UAA', e: 'Hai scelto un codone di stop: inizio e fine li hai letti, ma non li hai fissati.'},
+    {t: 'UAG', e: 'Hai scelto un codone di stop: inizio e fine li hai letti, ma non li hai fissati.'},
+    {t: 'AUG', ok: true},
+    {t: 'UGA', e: 'Hai scelto un codone di stop: inizio e fine li hai letti, ma non li hai fissati.'},
+    {t: 'GUG', e: 'Sei andato per somiglianza: riconosci le lettere, non il codone.'}
+   ],
+   x: 'AUG codifica la metionina e fa partire la traduzione. UAA, UAG e UGA sono i tre codoni di stop.'},
+  {id: 'C1', mat: 'Chimica', c: 'c-chi', liv: 'facile', pt: 1, t: 'm',
+   q: 'Quante moli ci sono in 36 g di acqua (massa molare 18 g/mol)?',
+   o: [
+    {t: '0,5', e: 'Hai diviso al contrario: la formula la ricordi, le unità no.'},
+    {t: '1', e: 'Hai risposto a occhio: una mole d\'acqua pesa 18 g, e qui i grammi sono 36.'},
+    {t: '2', ok: true},
+    {t: '18', e: 'Confondi la massa con le moli.'},
+    {t: '36', e: 'Confondi la massa con le moli.'}
+   ],
+   x: 'n = m / MM = 36 / 18 = 2 mol.'},
+  {id: 'F2', mat: 'Fisica', c: 'c-fis', liv: 'difficile', pt: 2, t: 'm',
+   q: 'Il raggio di un\'arteriola si dimezza. A parità di differenza di pressione e di lunghezza del vaso, per la legge di Poiseuille la portata diventa:',
+   o: [
+    {t: 'la metà', e: 'Hai pensato a una proporzionalità diretta: la legge di Poiseuille non te la ricordavi.'},
+    {t: 'un quarto', e: 'Hai ragionato sull\'area della sezione (r²): il concetto lo ricordi, la legge no.'},
+    {t: 'un ottavo', e: 'Hai usato r³: eri vicino, ma la potenza è la quarta.'},
+    {t: 'un sedicesimo', ok: true},
+    {t: 'il doppio', e: 'Hai confuso la portata con la velocità dell\'equazione di continuità.'}
+   ],
+   x: 'La portata è proporzionale alla quarta potenza del raggio, Q ∝ r⁴. (1/2)⁴ = 1/16.'},
+  {id: 'B2', mat: 'Biologia', c: 'c-bio', liv: 'difficile', pt: 2, t: 'm',
+   q: 'Una donna portatrice sana di emofilia A ha un figlio con un uomo non affetto. Il figlio è maschio. Qual è la probabilità che sia emofilico?',
+   o: [
+    {t: '0', e: 'Hai ragionato come per una malattia autosomica, dove servono due copie mutate. Qui il gene sta sull\'X, e al maschio ne basta una.'},
+    {t: '1/4', e: 'Hai risposto a un\'altra domanda: la probabilità che un figlio qualsiasi sia maschio e malato. Il figlio era già maschio. Succede quando si legge di fretta, e con 97 secondi si legge di fretta.'},
+    {t: '1/2', ok: true},
+    {t: '3/4', e: 'Hai applicato il 3:1 di Mendel a un caso dove non vale: uno schema imparato e usato ovunque.'},
+    {t: '1', e: 'Hai pensato che il figlio prenda per forza l\'X mutato. La madre ne ha due, e gliene passa uno a caso.'}
+   ],
+   x: 'L\'emofilia A è recessiva legata all\'X. Il maschio riceve l\'X dalla madre, che ne ha uno sano e uno mutato: metà delle probabilità. Il padre gli passa l\'Y, quindi non conta.'},
+  {id: 'C2', mat: 'Chimica', c: 'c-chi', liv: 'difficile', pt: 2, t: 'm',
+   q: 'Quale di queste soluzioni acquose ha la pressione osmotica più alta, alla stessa temperatura?',
+   o: [
+    {t: 'glucosio 0,15 M', e: 'Il glucosio non si dissocia: 0,15 resta 0,15. Hai guardato la concentrazione e non le particelle.'},
+    {t: 'NaCl 0,1 M', e: 'Sai che i sali si dissociano, ma non hai contato gli ioni: CaCl₂ ne dà tre.'},
+    {t: 'CaCl₂ 0,1 M', ok: true},
+    {t: 'Na₂SO₄ 0,05 M', e: 'Hai contato gli ioni ma non li hai moltiplicati per la concentrazione: 3 × 0,05 fa 0,15.'},
+    {t: 'urea 0,25 M', e: 'Hai scelto la molarità più alta: ti sei fermato al numero che vedevi.'}
+   ],
+   x: 'La pressione osmotica dipende dal numero di particelle (i × M). Glucosio 0,15, NaCl 0,2, CaCl₂ 0,3, Na₂SO₄ 0,15, urea 0,25 osmol/L.'},
+  {id: 'F3', mat: 'Fisica', c: 'c-fis', liv: 'estremamente difficile', pt: 3, t: 'c',
+   q: 'Il sangue (fluido ideale, densità 1000 kg/m³) scorre a 0,5 m/s in un\'arteria orizzontale. In un tratto con una stenosi il raggio del vaso si dimezza.',
+   pre: 'Nel tratto ristretto la pressione diminuisce di', unita: 'Pa',
+   acc: ['1875'], giusta: '1875 Pa',
+   err: {
+    '375': 'Hai fatto raddoppiare la velocità invece di quadruplicarla: confondi raggio e sezione.',
+    '3750': 'Hai dimenticato il ½ della formula di Bernoulli: la ricordi a metà.',
+    '2000': 'Hai usato solo la velocità finale: conta la differenza tra i quadrati delle due velocità.',
+    '4000': 'Senza ½ e solo con la velocità finale: la formula la ricordi in modo vago.'
+   },
+   x: 'Se il raggio si dimezza la sezione diventa un quarto e la velocità quadruplica: 2 m/s. Per Bernoulli ΔP = ½ ρ (v₂² − v₁²) = ½ × 1000 × (4 − 0,25) = 1875 Pa.'},
+  {id: 'B3', mat: 'Biologia', c: 'c-bio', liv: 'estremamente difficile', pt: 3, t: 'c',
+   q: 'Il filamento stampo di un breve gene, scritto in direzione 5\' → 3\', è:',
+   seq: '5\'-CTA ACC AAA CAT-3\'',
+   pre: 'Il peptide che si ottiene contiene', unita: 'amminoacidi',
+   acc: ['3', 'tre'], giusta: '3 amminoacidi',
+   err: {
+    '0': 'Hai scritto le basi complementari nell\'ordine in cui le vedevi, senza girare il filamento. L\'antiparallelismo lo sai a parole, ma sotto pressione non lo usi.',
+    'nessuno': 'Hai scritto le basi complementari nell\'ordine in cui le vedevi, senza girare il filamento. L\'antiparallelismo lo sai a parole, ma sotto pressione non lo usi.',
+    '4': 'Hai contato anche il codone di stop: chiude la traduzione ma non aggiunge amminoacidi.',
+    '12': 'Hai contato le basi invece dei codoni.',
+    '2': 'Hai escluso la metionina iniziale: AUG apre la traduzione e porta anche il primo amminoacido.'
+   },
+   x: 'Lo stampo va letto al contrario, 3\'-TAC AAA CCA ATC-5\', e l\'mRNA è 5\'-AUG UUU GGU UAG-3\'. Metionina, fenilalanina, glicina, poi UAG è uno stop: tre amminoacidi.'},
+  {id: 'C3', mat: 'Chimica', c: 'c-chi', liv: 'estremamente difficile', pt: 3, t: 'c',
+   q: 'Si mescolano 50 mL di NaOH 0,3 M con 50 mL di HCl 0,1 M.',
+   pre: 'Il pH della soluzione finale è', unita: '',
+   acc: ['13'], giusta: '13',
+   err: {
+    '13.3': 'Hai sottratto le concentrazioni, o hai dimenticato che mescolando il volume raddoppia.',
+    '1': 'Hai calcolato il pOH e ti sei fermato: mancava l\'ultimo passaggio, 14 − 1.',
+    '7': '«Acido più base fa neutro»: una regola presa come automatica. Qui la base è in eccesso.',
+    '12': 'Hai sbagliato la diluizione di un fattore 10.'
+   },
+   x: 'NaOH 0,015 mol, HCl 0,005 mol. Restano 0,010 mol di OH⁻ in 100 mL: [OH⁻] = 0,1 M, pOH = 1, pH = 13.'}
+];
+var ERR_ALTRO = 'La risposta non torna e non somiglia a nessuno degli errori tipici: senza un procedimento fisso, ogni volta si improvvisa.';
+var ERR_VUOTA = 'Senza opzioni da guardare non sapevi da dove partire. All\'esame la parte a completamento è così.';
+
+/* Blocco 4 · I conti */
+var UD = {
+  Fisica: {c: 'c-fis', cfu: [0.2, 1.4, 1.2, 0.4, 1, 1.2, 0.6], tit: ['Grandezze e vettori', 'Meccanica', 'Fluidi', 'Onde e acustica', 'Termodinamica', 'Elettricità e magnetismo', 'Radiazioni e ottica']},
+  Chimica: {c: 'c-chi', cfu: [1, 1, 0.5, 1, 0.5, 1, 1], tit: ['Atomo, legami, stati della materia', 'Soluzioni e proprietà colligative', 'Cinetica ed equilibrio', 'Acidi, basi, pH, redox', 'Carbonio e idrocarburi', 'Gruppi funzionali e isomeria', 'Biomolecole']},
+  Biologia: {c: 'c-bio', cfu: [0.5, 0.5, 1, 0.75, 1.75, 0.75, 0.75], tit: ['Basi molecolari della vita', 'Informazione genetica ed epigenetica', 'Flusso dell\'informazione', 'Genetica dei caratteri', 'Strutture cellulari', 'Segnalazione cellulare', 'Proliferazione e morte cellulare']}
+};
+var K1 = [{t: 'Circa 100', v: 100}, {t: 'Circa 200', v: 200}, {t: 'Circa 300', v: 300}, {t: 'Più di 400', v: 400}];
+var K3 = [{t: 'Meno di 10', v: 7}, {t: 'Tra 10 e 20', v: 15}, {t: 'Tra 20 e 30', v: 25}, {t: 'Tra 30 e 40', v: 35}, {t: 'Più di 40', v: 45}];
+
+/* Testi del risultato */
+var PROFILI = {
+  1: {n: 'Ripetente per un soffio', t: 'Ti è già successo una volta, e per poco. Chi resta fuori per pochi punti di solito non ha un buco grosso: ne ha due o tre piccoli, sempre gli stessi. Il primo l\'abbiamo trovato, è qui sotto.'},
+  2: {n: 'Chi torna dopo anni', t: 'La voglia ce l\'hai, e spesso è più forte di quella di chi ha diciott\'anni. Ti manca un modo di preparare tre esami insieme con poche ore a settimana, e quello si impara.'},
+  3: {n: 'Chi studia e lavora', t: 'Più ore non ne hai, e non te le chiediamo. Ti serve studiare meno cose, quelle che escono, nell\'ordine giusto.'},
+  4: {n: 'Bravo studente senza basi scientifiche', t: 'Studiare lo sai fare, l\'hai fatto bene per cinque anni. Ti mancano le basi di partenza, quasi sempre di fisica, e con il metodo del liceo recuperarle costa il doppio del tempo.'},
+  5: {n: 'Chi non ha ancora cominciato', t: 'Sei meno in ritardo di quanto pensi, ma adesso ogni settimana ferma pesa il doppio. Ti serve un primo passo piccolo, con una data. Lo trovi in fondo alla pagina.'},
+  6: {n: 'Studente in pari col metodo del liceo', t: 'Sei in pari, e questo ti mette davanti a tanti. Il metodo che ti ha portato fin qui però è tarato sulle interrogazioni, e all\'esame hai 97 secondi a domanda.'}
+};
+var PILASTRI = {
+  organizzarsi: {t: 'Il tuo buco principale è l\'organizzazione. Studi, ma senza sapere se in quel momento stai studiando la cosa giusta: scegli l\'argomento in base all\'ansia del giorno, cambi fonte, e a fine settimana resta la sensazione di aver lavorato tanto e combinato poco.',
+    quando: 'domenica', passo: 'Prendi un foglio. Scrivi le UD che ti mancano, quelle dei conti qui sopra, con una data accanto a ciascuna. Tieni una sola fonte per materia. Quando non sai cosa studiare, guardi il foglio e non l\'ansia.'},
+  capire: {t: 'Il tuo buco principale è il capire. Quando un argomento non entra lo rileggi o lo salti, e ogni argomento saltato torna all\'esame come una domanda a cui rispondi a caso. Rileggere dà la sensazione di aver capito. Quella sensazione inganna.',
+    quando: 'domani', passo: 'Prendi l\'ultimo argomento che hai saltato. Prova a spiegarlo ad alta voce in due minuti, senza guardare niente. Il punto in cui ti blocchi è il pezzo da studiare, il resto lo sai già.'},
+  ricordare: {t: 'Il tuo buco principale è il ricordare. Rileggi, sottolinei, rifai i riassunti, e lo studio sembra fatto. All\'esame però non c\'è il libro aperto: c\'è una domanda e ci sono 97 secondi, e a rispondere ci si allena solo rispondendo.',
+    quando: 'da domani', passo: 'Ogni giorno, prima di aprire gli appunti, fai 20 domande con il timer e senza libro. Segna quelle sbagliate e rifalle tre giorni dopo.'},
+  solido: {t: 'Il tuo modo di studiare regge: hai un piano, ti metti alla prova, non ti accontenti di rileggere. Quello che resta da guardare sono i conti qui sopra.',
+    quando: 'questa settimana', passo: 'Fai una simulazione intera con il tempo vero, 31 domande per materia. È l\'unico modo per sapere se il metodo regge anche alla velocità dell\'esame.'}
+};
+
+/* ================= STATO ================= */
+
+var S = {
+  tag: [], risposte: {}, pil: {O: 0, Ca: 0, R: 0}, voto: 5,
+  prova: {}, k1: null, k2: {Fisica: 0, Chimica: 0, Biologia: 0}, k3: null,
+  utm: {}
+};
+var app = document.getElementById('app');
+var avanz = document.getElementById('avanz');
+var timerId = null;
+
+(function leggiUtm() {
+  try {
+    var p = new URLSearchParams(location.search);
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(function (k) {
+      var v = p.get(k); if (v) S.utm[k] = v.slice(0, 120);
+    });
+  } catch (e) {}
+})();
+
+/* ================= UTILITÀ ================= */
+
+function el(tag, attr, figli) {
+  var n = document.createElement(tag);
+  if (attr) Object.keys(attr).forEach(function (k) {
+    if (k === 'class') n.className = attr[k];
+    else if (k === 'html') n.innerHTML = attr[k];
+    else if (k === 'text') n.textContent = attr[k];
+    else if (k.slice(0, 2) === 'on') n.addEventListener(k.slice(2), attr[k]);
+    else n.setAttribute(k, attr[k]);
+  });
+  (figli || []).forEach(function (f) { if (f != null) n.appendChild(typeof f === 'string' ? document.createTextNode(f) : f); });
+  return n;
+}
+function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]; }); }
+function schermo(nodi, quota) {
+  if (timerId) { clearInterval(timerId); timerId = null; }
+  app.innerHTML = '';
+  var box = el('div', {class: 'schermo'}, nodi);
+  app.appendChild(box);
+  if (quota != null) avanz.style.width = Math.round(quota * 100) + '%';
+  window.scrollTo(0, 0);
+  var primo = box.querySelector('h1,h2');
+  if (primo) { primo.setAttribute('tabindex', '-1'); primo.focus({preventScroll: true}); }
+}
+function mescola(a, seme) {
+  var r = seme;
+  function rnd() { r = (r * 9301 + 49297) % 233280; return r / 233280; }
+  a = a.slice();
+  for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+  return a;
+}
+function norm(s) {
+  return String(s || '').toLowerCase()
+    .replace(/amminoacidi|amminoacido|aminoacidi|pascal|\bpa\b|\baa\b/g, '')
+    .replace(/(\d)\s*pa$/, '$1')
+    .replace(/\s+/g, '')
+    .replace(/^(\d{1,3})\.(\d{3})$/, '$1$2')
+    .replace(/,/g, '.')
+    .replace(/\.0+$/, '');
+}
+function fmt(n, dec) { return Number(n).toLocaleString('it-IT', {maximumFractionDigits: dec || 0, minimumFractionDigits: 0}); }
+function oggi() { var d = new Date(); d.setHours(0, 0, 0, 0); return d; }
+function appello() {
+  var t = oggi();
+  for (var i = 0; i < APPELLI.length; i++) if (t < APPELLI[i].data) return APPELLI[i];
+  return APPELLI[APPELLI.length - 1];
+}
+function settimane() {
+  var a = appello(), giorni = (a.data - oggi()) / 864e5;
+  return Math.max(giorni / 7, 1);
+}
+function dataIt(d) { return d.toLocaleDateString('it-IT', {weekday: 'long', day: 'numeric', month: 'long'}); }
+function dataPasso(quando) {
+  var d = oggi();
+  if (quando === 'domenica') { var g = (7 - d.getDay()) % 7 || 7; d.setDate(d.getDate() + g); return 'entro ' + dataIt(d); }
+  if (quando === 'domani' || quando === 'da domani') { d.setDate(d.getDate() + 1); return quando + ', ' + dataIt(d); }
+  return quando;
+}
+
+/* ================= FLUSSO ================= */
+
+var PASSI = [];
+PROFILO.forEach(function (q) { PASSI.push({tipo: 'scelta', q: q, blocco: 'Chi sei'}); });
+SPECCHIO.forEach(function (q) { PASSI.push({tipo: 'specchio', q: q}); });
+PASSI.push({tipo: 'voto'});
+PASSI.push({tipo: 'introProva'});
+PROVA.forEach(function (q, i) { PASSI.push({tipo: 'prova', q: q, i: i}); });
+PASSI.push({tipo: 'k1'});
+PASSI.push({tipo: 'k2'});
+PASSI.push({tipo: 'k3'});
+PASSI.push({tipo: 'modulo'});
+var passo = -1;
+function avanti() { passo++; mostra(); }
+function quota() { return (passo + 1) / (PASSI.length + 1); }
+
+function mostra() {
+  var p = PASSI[passo];
+  if (!p) return risultato();
+  if (p.tipo === 'scelta') return domandaScelta(p.q, 'Chi sei', function (o) { S.risposte[p.q.id] = o.t; S.tag = S.tag.concat(o.tag); });
+  if (p.tipo === 'specchio') return domandaScelta(p.q, 'Lo specchio', function (o) {
+    S.risposte[p.q.id] = o.t; Object.keys(o.p).forEach(function (k) { S.pil[k] += o.p[k]; });
+  });
+  if (p.tipo === 'voto') return schermoVoto();
+  if (p.tipo === 'introProva') return introProva();
+  if (p.tipo === 'prova') return domandaProva(p.q, p.i);
+  if (p.tipo === 'k1') return domandaScelta({id: 'K1', q: 'Secondo te, quante ore servono per studiare tutto il programma una volta?', o: K1}, 'I conti', function (o) { S.k1 = o.v; S.risposte.K1 = o.t; });
+  if (p.tipo === 'k2') return schermoK2();
+  if (p.tipo === 'k3') return domandaScelta({id: 'K3', q: 'Quante ore riesci a studiare a settimana, davvero?', o: K3}, 'I conti', function (o) { S.k3 = o.v; S.risposte.K3 = o.t; });
+  if (p.tipo === 'modulo') return schermoModulo();
+}
+
+function intro() {
+  avanz.style.width = '0';
+  schermo([
+    el('p', {class: 'occhiello', text: 'Semestre filtro di Medicina'}),
+    el('h1', {html: 'Il test dei <em>97 secondi</em>'}),
+    el('p', {class: 'lead', text: 'All\'esame hai 97 secondi per ogni domanda. Qui ne provi nove, con il tempo vero, e poi facciamo i conti sulle ore che ti restano. Alla fine sai se il tuo metodo regge il ' + appello().nome + '.'}),
+    el('ul', {class: 'punti'}, [
+      el('li', {html: '<b>1</b>Chi sei e come studi: dieci tocchi.'}),
+      el('li', {html: '<b>2</b>La prova: nove domande d\'esame, dalla facile all\'estrema.'}),
+      el('li', {html: '<b>3</b>I conti: quanto programma vedi prima dell\'appello.'})
+    ]),
+    el('button', {class: 'btn', type: 'button', onclick: avanti, text: 'Comincia il test'}),
+    el('p', {class: 'nota', text: 'Ci vogliono circa sette minuti. Niente calcolatrice: all\'esame non c\'è.'})
+  ]);
+}
+
+function domandaScelta(q, blocco, salva) {
+  var lettere = 'ABCDE';
+  schermo([
+    el('p', {class: 'occhiello', text: blocco}),
+    el('h2', {text: q.q}),
+    el('div', {class: 'opzioni'}, q.o.map(function (o, i) {
+      return el('button', {class: 'opz', type: 'button', onclick: function () { salva(o); avanti(); }}, [
+        el('span', {class: 'l', text: lettere[i]}), el('span', {text: o.t})
+      ]);
+    }))
+  ], quota());
+}
+
+function schermoVoto() {
+  var out = el('output', {text: String(S.voto)});
+  var r = el('input', {type: 'range', min: '1', max: '10', step: '1', value: String(S.voto), 'aria-label': 'Voto al tuo metodo da 1 a 10',
+    oninput: function () { S.voto = +r.value; out.textContent = r.value; }});
+  schermo([
+    el('p', {class: 'occhiello', text: 'Lo specchio'}),
+    el('h2', {text: 'Da 1 a 10, quanto il tuo metodo di adesso ti porta a passare il ' + appello().nome + '?'}),
+    el('div', {class: 'cursore'}, [out, r, el('div', {class: 'estremi'}, [el('span', {text: '1 · per niente'}), el('span', {text: '10 · sicuro'})])]),
+    el('button', {class: 'btn', type: 'button', onclick: function () { S.risposte.S6 = S.voto; avanti(); }, text: 'Avanti'})
+  ], quota());
+}
+
+function introProva() {
+  schermo([
+    el('p', {class: 'occhiello', text: 'La prova'}),
+    el('h2', {text: 'Nove domande d\'esame, 97 secondi ciascuna'}),
+    el('p', {class: 'lead', text: 'Tre per materia: una facile, una difficile, una estremamente difficile. Le ultime tre sono a completamento, come una parte dell\'esame: la risposta va scritta, non scelta.'}),
+    el('p', {class: 'lead', text: 'Quando il tempo finisce si passa alla domanda dopo. Le risposte giuste le vedi alla fine.'}),
+    el('button', {class: 'btn', type: 'button', onclick: avanti, text: 'Sono pronto, parti'})
+  ], quota());
+}
+
+function domandaProva(q, i) {
+  var inizio = Date.now(), fatto = false, DURATA = 97;
+  var tEl = el('span', {class: 't', text: '97'});
+  var bar = el('i');
+  var timer = el('div', {class: 'timer', role: 'timer', 'aria-label': 'Secondi rimasti'}, [tEl, el('span', {class: 'b'}, [bar])]);
+  function chiudi(risposta, opzione) {
+    if (fatto) return; fatto = true;
+    var sec = Math.round((Date.now() - inizio) / 1000);
+    var r = {id: q.id, sec: Math.min(sec, DURATA), risposta: risposta, scaduto: risposta == null};
+    if (q.t === 'm') {
+      r.ok = !!(opzione && opzione.ok);
+      r.e = opzione && !opzione.ok ? opzione.e : (r.scaduto ? TEMPO_SCADUTO : '');
+    } else {
+      var n = norm(risposta);
+      r.ok = q.acc.map(norm).indexOf(n) >= 0;
+      if (!r.ok) r.e = r.scaduto ? TEMPO_SCADUTO : (!n ? ERR_VUOTA : (q.err[n] || ERR_ALTRO));
+    }
+    S.prova[q.id] = r;
+    avanti();
+  }
+  var corpo;
+  if (q.t === 'm') {
+    var lettere = 'ABCDE';
+    corpo = el('div', {class: 'opzioni'}, mescola(q.o, 1411 + i * 7).map(function (o, j) {
+      return el('button', {class: 'opz', type: 'button', onclick: function () { chiudi(o.t, o); }}, [
+        el('span', {class: 'l', text: lettere[j]}), el('span', {text: o.t})
+      ]);
+    }));
+  } else {
+    var inp = el('input', {type: 'text', inputmode: 'decimal', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', 'aria-label': 'La tua risposta'});
+    if (q.id === 'B3') inp.setAttribute('inputmode', 'text');
+    corpo = el('form', {onsubmit: function (e) { e.preventDefault(); chiudi(inp.value.trim()); }}, [
+      el('p', {class: 'domanda', text: q.pre + ' …'}),
+      el('div', {class: 'campo'}, [inp, q.unita ? el('span', {text: q.unita}) : null]),
+      el('button', {class: 'btn', type: 'submit', text: 'Conferma'})
+    ]);
+  }
+  schermo([
+    el('p', {class: 'occhiello', text: 'La prova · ' + (i + 1) + ' di 9'}),
+    el('div', null, [el('span', {class: 'chip ' + q.c, text: q.mat}), el('span', {class: 'chip c-oro', text: q.liv})]),
+    timer,
+    el('h2', {class: 'domanda', text: q.q}),
+    q.seq ? el('p', {class: 'seq', text: q.seq}) : null,
+    corpo
+  ], quota());
+  if (q.t === 'c') setTimeout(function () { var f = app.querySelector('input'); if (f) f.focus(); }, 60);
+  timerId = setInterval(function () {
+    var rest = Math.max(0, DURATA - (Date.now() - inizio) / 1000);
+    tEl.textContent = String(Math.ceil(rest));
+    bar.style.transform = 'scaleX(' + (rest / DURATA) + ')';
+    timer.classList.toggle('meta', rest <= 48 && rest > 15);
+    timer.classList.toggle('poco', rest <= 15);
+    if (rest <= 0) chiudi(null);
+  }, 250);
+}
+
+function schermoK2() {
+  var conts = Object.keys(UD).map(function (m) {
+    var u = UD[m], out = el('output', {text: String(S.k2[m])});
+    var lista = el('ol', null, u.tit.map(function (t) { return el('li', {text: t}); }));
+    function aggiorna() {
+      out.textContent = String(S.k2[m]);
+      Array.prototype.forEach.call(lista.children, function (li, i) { li.className = i < S.k2[m] ? 'si' : ''; });
+    }
+    var meno = el('button', {type: 'button', 'aria-label': 'Una UD in meno di ' + m, text: '−', onclick: function () { S.k2[m] = Math.max(0, S.k2[m] - 1); aggiorna(); }});
+    var piu = el('button', {type: 'button', 'aria-label': 'Una UD in più di ' + m, text: '+', onclick: function () { S.k2[m] = Math.min(7, S.k2[m] + 1); aggiorna(); }});
+    aggiorna();
+    return el('div', {class: 'cont ' + u.c}, [el('div', {class: 'riga'}, [el('h3', {text: m}), meno, out, piu]), lista]);
+  });
+  schermo([
+    el('p', {class: 'occhiello', text: 'I conti'}),
+    el('h2', {text: 'Quante unità didattiche hai già studiato abbastanza bene da rispondere a una domanda d\'esame?'}),
+    el('p', {class: 'lead', text: 'Non quelle che hai letto: quelle su cui stamattina sapresti rispondere. Contiamo in ordine, dalla prima.'}),
+    el('div', {class: 'conts'}, conts),
+    el('button', {class: 'btn', type: 'button', onclick: function () { S.risposte.K2 = 'F ' + S.k2.Fisica + ' · C ' + S.k2.Chimica + ' · B ' + S.k2.Biologia; avanti(); }, text: 'Avanti'})
+  ], quota());
+}
+
+/* ================= CALCOLI ================= */
+
+function calcola() {
+  var R = {};
+  /* profilo */
+  function ha(t) { return S.tag.indexOf(t) >= 0; }
+  R.profilo = ha('qf-ripetente') ? 1 : ha('qf-adulto') ? 2 : (ha('qf-lavoratore') || ha('qf-pendolare')) ? 3 : ha('qf-scuola-senza-basi') ? 4 : ha('qf-fermo') ? 5 : 6;
+  /* prova */
+  R.punti = 0; R.mat = {Fisica: 0, Biologia: 0, Chimica: 0}; R.facileSbagliata = null;
+  PROVA.forEach(function (q) {
+    var r = S.prova[q.id];
+    if (r && r.ok) { R.punti += q.pt; R.mat[q.mat] += q.pt; }
+    else if (q.pt === 1 && !R.facileSbagliata) R.facileSbagliata = q;
+  });
+  R.prova10 = Math.round(R.punti / 18 * 10);
+  R.errore = null;
+  for (var lv = 1; lv <= 3 && !R.errore; lv++) PROVA.forEach(function (q) {
+    if (!R.errore && q.pt === lv && !(S.prova[q.id] && S.prova[q.id].ok)) R.errore = q;
+  });
+  /* pilastro: parità → ricordare, capire, organizzarsi */
+  var ord = [['ricordare', S.pil.R], ['capire', S.pil.Ca], ['organizzarsi', S.pil.O]];
+  var best = ord[0];
+  ord.forEach(function (x) { if (x[1] > best[1]) best = x; });
+  R.pilastro = best[1] > 0 ? best[0] : (R.punti < 10 ? 'capire' : 'solido');
+  /* conti */
+  var fatti = 0;
+  Object.keys(UD).forEach(function (m) { for (var i = 0; i < S.k2[m]; i++) fatti += UD[m].cfu[i]; });
+  R.cfuFatti = fatti;
+  R.cfuMancanti = 18 - fatti;
+  R.oreNec = R.cfuMancanti * ORE_PER_CFU;
+  R.sett = settimane();
+  R.oreDisp = (S.k3 || 0) * R.sett;
+  var q = R.oreNec > 0 ? Math.min(1, R.oreDisp / R.oreNec) : 1;
+  R.copertura = Math.round((fatti + R.cfuMancanti * q) / 18 * 100);
+  R.orePiu = Math.max(0, (R.oreNec - R.oreDisp) / R.sett);
+  R.oreAvanzo = Math.max(0, R.oreDisp - R.oreNec);
+  /* urgenza */
+  if (R.copertura < 70 || R.punti < 9 || R.facileSbagliata) R.urgenza = 'alta';
+  else if (R.copertura >= 100 && R.oreDisp >= R.oreNec && R.punti >= 14) R.urgenza = 'bassa';
+  else R.urgenza = 'media';
+  return R;
+}
+
+/* ================= MODULO ================= */
+
+var EMAIL_OK = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+function e164(s) {
+  var c = s.replace(/\D/g, '');
+  if (!c) return '';
+  if (s.trim().charAt(0) === '+') return '+' + c;
+  if (c.slice(0, 2) === '00') return '+' + c.slice(2);
+  if (c.length === 10 && c.charAt(0) === '3') return '+39' + c;
+  if (c.length === 12 && c.slice(0, 2) === '39') return '+' + c;
+  return c;
+}
+function telBuono(v) { v = v.trim(); return v.replace(/\D/g, '').length >= 8 && /^\+?[\d\s().-]{8,20}$/.test(v); }
+
+function schermoModulo() {
+  var msg = el('p', {class: 'msg', role: 'alert'});
+  var nome = el('input', {type: 'text', id: 'f-nome', name: 'nome', autocomplete: 'name', required: ''});
+  var mail = el('input', {type: 'email', id: 'f-mail', name: 'email', autocomplete: 'email', required: ''});
+  var tel = el('input', {type: 'tel', id: 'f-tel', name: 'telefono', autocomplete: 'tel', inputmode: 'tel', required: ''});
+  var ok = el('input', {type: 'checkbox', name: 'consenso', required: ''});
+  var trappola = el('input', {type: 'text', name: '_gotcha', tabindex: '-1', autocomplete: 'off'});
+  var consTesto = el('span', {html: 'Ho letto l\'<a href="/appunti/privacy.html" target="_blank" rel="noopener">informativa privacy</a> e accetto che il Portale dei Futuri Medici mi contatti per email e WhatsApp con il risultato e con gli inviti alle prossime live.'});
+  var btn = el('button', {class: 'btn', type: 'submit', text: 'Mostrami il risultato'});
+  var form = el('form', {class: 'modulo', novalidate: '', onsubmit: invia}, [
+    el('div', {class: 'f'}, [el('label', {for: 'f-nome', text: 'Nome e cognome'}), nome]),
+    el('div', {class: 'f'}, [el('label', {for: 'f-mail', text: 'Email'}), mail]),
+    el('div', {class: 'f'}, [el('label', {for: 'f-tel', text: 'Numero WhatsApp'}), tel]),
+    el('div', {class: 'trappola', 'aria-hidden': 'true'}, [trappola]),
+    el('label', {class: 'consent'}, [ok, consTesto]),
+    btn, msg
+  ]);
+  schermo([
+    el('p', {class: 'occhiello', text: 'Fatto'}),
+    el('h2', {text: 'Il tuo risultato è pronto'}),
+    el('p', {class: 'lead', text: 'Ti mandiamo il risultato anche per email, così lo ritrovi.'}),
+    form
+  ], quota());
+
+  function invia(e) {
+    e.preventDefault();
+    if (trappola.value) return;
+    mail.value = mail.value.trim().toLowerCase();
+    var campi = [[nome, nome.value.trim().length >= 2], [mail, EMAIL_OK.test(mail.value)], [tel, telBuono(tel.value)]];
+    var primo = null;
+    campi.forEach(function (c) { c[0].setAttribute('aria-invalid', String(!c[1])); if (!c[1] && !primo) primo = c[0]; });
+    if (primo) { msg.textContent = 'Controlla i campi evidenziati.'; primo.focus(); return; }
+    if (!ok.checked) { msg.textContent = 'Serve il consenso per mostrarti e mandarti il risultato.'; return; }
+    msg.textContent = '';
+    btn.disabled = true; btn.textContent = 'Un attimo…';
+    var R = calcola();
+    S.contatto = {nome: nome.value.trim().replace(/\s+/g, ' '), email: mail.value, tel: tel.value.trim(), consenso: consTesto.textContent.replace(/\s+/g, ' ').trim()};
+    var crm = document.body.getAttribute('data-crm');
+    var fatto = false;
+    function vai() { if (fatto) return; fatto = true; risultato(R); }
+    if (!crm) return vai();
+    setTimeout(vai, CRM_ATTESA_MS);
+    try {
+      fetch(crm, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload(R))})
+        .then(vai, vai);
+    } catch (x) { vai(); }
+  }
+}
+
+function payload(R) {
+  var c = S.contatto, sp = c.nome.indexOf(' ');
+  var tag = ['qf-completato', 'qf-profilo-' + R.profilo, 'qf-pilastro-' + R.pilastro, 'qf-urgenza-' + R.urgenza].concat(S.tag);
+  var err = R.errore ? (R.errore.id + ': ' + (S.prova[R.errore.id].scaduto ? 'tempo scaduto' : (S.prova[R.errore.id].risposta || 'vuota'))) : '';
+  var dati = {
+    full_name: c.nome, first_name: sp < 0 ? c.nome : c.nome.slice(0, sp), last_name: sp < 0 ? '' : c.nome.slice(sp + 1),
+    email: c.email, phone: e164(c.tel), phone_raw: c.tel,
+    consent: true, consent_text: c.consenso, consent_at: new Date().toISOString(),
+    source: 'portaledeifuturimedici.com', page: String(location.href).split('#')[0].split('?')[0], form: 'quizfunnel-97-secondi',
+    tags: tag.filter(function (t, i) { return tag.indexOf(t) === i; }).join(','),
+    qf_profilo: PROFILI[R.profilo].n,
+    qf_pilastro: R.pilastro,
+    qf_urgenza: R.urgenza,
+    qf_punteggio: R.punti,
+    qf_punteggio_materie: 'F ' + R.mat.Fisica + ' · B ' + R.mat.Biologia + ' · C ' + R.mat.Chimica,
+    qf_voto_metodo: S.voto,
+    qf_copertura: R.copertura,
+    qf_ore_mancanti_sett: Math.round(R.orePiu),
+    qf_errore: err,
+    qf_data: new Date().toISOString().slice(0, 10),
+    qf_risposte: JSON.stringify(S.risposte)
+  };
+  Object.keys(S.utm).forEach(function (k) { dati[k] = S.utm[k]; });
+  return dati;
+}
+
+/* ================= RISULTATO ================= */
+
+function risultato(R) {
+  R = R || calcola();
+  passo = PASSI.length;
+  avanz.style.width = '100%';
+  var P = PROFILI[R.profilo], pil = PILASTRI[R.pilastro], nome = S.contatto ? S.contatto.nome.split(' ')[0] : '';
+  var blocchi = [];
+
+  blocchi.push(el('div', null, [
+    el('p', {class: 'occhiello', text: (nome ? nome + ', il' : 'Il') + ' tuo profilo'}),
+    el('h1', {text: P.n}),
+    el('p', {class: 'lead', text: P.t})
+  ]));
+
+  /* voto e prova */
+  var d = S.voto - R.prova10, frase;
+  if (d > 2) frase = 'Ci avevi dato ' + S.voto + '. La prova dice ' + R.prova10 + '. Quella distanza è la cosa che fa più paura, perché da dentro non si vede: si studia tanto e sembra di andare bene.';
+  else if (d < -2) frase = 'Ci avevi dato ' + S.voto + ', la prova dice ' + R.prova10 + '. Sei più avanti di quanto credi. La paura di sbagliare metodo, per ora, ti pesa più del metodo stesso.';
+  else frase = 'Ci avevi dato ' + S.voto + ', la prova dice ' + R.prova10 + '. Ti conosci bene, ed è un vantaggio: sai già dove guardare.';
+  var bv = el('div', {class: 'blocco'}, [
+    el('p', {class: 'occhiello', text: 'Il voto e la prova'}),
+    el('div', {class: 'due'}, [
+      el('div', {class: 'num'}, [el('b', {text: String(S.voto)}), el('span', {text: 'il tuo voto al metodo'})]),
+      el('div', {class: 'num'}, [el('b', {text: String(R.prova10)}), el('span', {text: 'la prova, su 10 (' + R.punti + ' su 18)'})])
+    ]),
+    el('p', {text: frase}),
+    el('div', {class: 'mat'}, ['Fisica', 'Biologia', 'Chimica'].map(function (m) {
+      return el('div', {class: UD[m].c}, [el('b', {text: R.mat[m] + '/6'}), el('span', {text: m})]);
+    }))
+  ]);
+  if (R.facileSbagliata) bv.appendChild(el('p', {class: 'nota', text: 'Hai sbagliato la domanda facile di ' + R.facileSbagliata.mat.toLowerCase() + '. Le estreme le sbagliano quasi tutti, le facili no: è lì che si perdono i punti che poi mancano in graduatoria.'}));
+  blocchi.push(bv);
+
+  /* il buco */
+  var bb = el('div', {class: 'blocco'}, [el('p', {class: 'occhiello', text: 'Il tuo buco'}), el('p', {text: pil.t})]);
+  if (R.errore) {
+    var q = R.errore, r = S.prova[q.id];
+    var giusta = q.t === 'm' ? q.o.filter(function (o) { return o.ok; })[0].t : q.giusta;
+    var tua = r.scaduto ? 'Tempo scaduto' : (r.risposta ? 'Hai risposto ' + r.risposta + (q.unita && q.t === 'c' ? ' ' + q.unita : '') : 'Risposta vuota');
+    bb.appendChild(el('div', {class: 'errore'}, [
+      el('p', {class: 'nota', text: 'L\'errore che lo dimostra · ' + q.mat + ', ' + q.liv}),
+      el('p', {class: 'q', text: q.q + (q.seq ? ' ' + q.seq : '') + (q.pre ? ' ' + q.pre + ' …' : '')}),
+      el('p', null, [el('span', {class: 'tua', text: tua + '. '}), el('span', {class: 'giusta', text: 'Era ' + giusta + '.'})]),
+      el('p', {text: q.x}),
+      el('p', null, [el('b', {text: r.e || ''})])
+    ]));
+  } else {
+    bb.appendChild(el('p', null, [el('b', {text: 'Nella prova non hai sbagliato niente.'})]));
+  }
+  blocchi.push(bb);
+
+  /* i conti */
+  var a = appello();
+  var k1 = S.k1 >= 400 ? 'più di 400' : String(S.k1);
+  var bc = el('div', {class: 'blocco'}, [
+    el('p', {class: 'occhiello', text: 'I conti'}),
+    el('p', {text: 'Il programma vale 450 ore di impegno, per legge. Tu avevi detto ' + k1 + '.'}),
+    el('div', {class: 'grande', text: R.copertura + '%'}),
+    el('p', null, [el('b', {text: 'del programma visto all\'appello del ' + a.nome + '.'}), ' Una volta sola, senza ripasso e senza simulazioni.']),
+    el('p', {text: 'Per le UD che ti mancano servono almeno ' + fmt(R.oreNec) + ' ore di studio. Da qui al ' + a.nome + ', con il tuo ritmo, ne hai ' + fmt(R.oreDisp) + '.'}),
+    R.orePiu > 0
+      ? el('p', null, [el('b', {text: 'Per vederlo tutto ti servirebbero ' + fmt(Math.ceil(R.orePiu)) + ' ore in più a settimana.'})])
+      : el('p', null, [el('b', {text: 'Ci arrivi, e ti restano ' + fmt(R.oreAvanzo) + ' ore per ripassare e fare simulazioni.'})]),
+    el('p', {class: 'nota', text: 'Come lo calcoliamo: 1 CFU = 25 ore di impegno (DM 270/2004), di cui almeno 15 di studio da soli; 18 CFU in tutto, con il peso ufficiale di ogni UD dai syllabus 2026.'})
+  ]);
+  blocchi.push(bc);
+
+  /* primo passo */
+  blocchi.push(el('div', {class: 'blocco passo'}, [
+    el('p', {class: 'occhiello', text: 'Il primo passo'}),
+    el('p', {class: 'quando', text: dataPasso(pil.quando)}),
+    el('p', {text: pil.passo})
+  ]));
+
+  /* cosa facciamo noi */
+  var testi = {
+    alta: 'Questi numeri li abbiamo visti tante volte, e si possono cambiare. Nella prossima live, gratuita, ti facciamo vedere come si prepara questo esame con il tempo che resta.',
+    media: 'Il metodo che usi ti ha portato fin qui, e con qualche cambio ti porta fino al ' + a.nome + '. Nella prossima live ti facciamo vedere quali.',
+    bassa: 'I conti tornano e la prova lo conferma. Se vuoi capire come usare le ore che ti avanzano, ne parliamo nella prossima live.'
+  };
+  var link = EVENTO + '?utm_source=quizfunnel&utm_medium=quiz&utm_campaign=test-97-secondi&utm_content=urgenza-' + R.urgenza;
+  var bn = el('div', {class: 'blocco'}, [
+    el('p', {class: 'occhiello', text: 'Cosa facciamo noi'}),
+    el('p', {text: testi[R.urgenza]}),
+    el('a', {class: 'btn', href: link, text: 'Iscriviti alla live'})
+  ]);
+  if (R.urgenza === 'alta') bn.appendChild(el('p', {class: 'nota', text: 'Nelle prossime ore ti scriviamo anche su WhatsApp, per guardare il tuo risultato insieme.'}));
+  blocchi.push(bn);
+
+  schermo(blocchi, 1);
+}
+
+/* ================= AVVIO ================= */
+
+document.getElementById('tema').addEventListener('click', function () {
+  var d = document.documentElement, t = d.getAttribute('data-theme') === 'day' ? 'night' : 'day';
+  d.setAttribute('data-theme', t);
+  try { var p = JSON.parse(localStorage.getItem('appunti-prefs') || '{}'); p.tema = t; localStorage.setItem('appunti-prefs', JSON.stringify(p)); } catch (e) {}
+});
+window.addEventListener('beforeunload', function (e) {
+  if (passo >= 0 && passo < PASSI.length) { e.preventDefault(); e.returnValue = ''; }
+});
+window.QF = {S: S, calcola: calcola, norm: norm}; /* per le prove in console */
+intro();
+})();
+</script>
+</body>
+</html>
