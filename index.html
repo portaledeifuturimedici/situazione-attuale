@@ -130,6 +130,11 @@ h2{font-size:clamp(1.35rem,5vw,1.75rem);margin-bottom:18px}
 .opz.ferma:not(.scelta){opacity:.6}
 .bollo{display:inline-block;margin:14px 0 6px;padding:6px 12px;border-radius:999px;background:var(--sup2);font:600 .82rem/1.3 var(--mono);color:var(--oro)}
 .campo input:disabled{opacity:.85}
+.griglia{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:6px 0 22px}
+.casella{padding:12px 6px;border-radius:14px;border:1.5px dashed var(--line);background:transparent;cursor:pointer;text-align:center}
+.casella b{display:block;font:750 1.3rem/1 var(--mono)}
+.casella span{font-size:.75rem;color:var(--muted)}
+.casella.data{border-style:solid;border-color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent)}
 .piede{max-width:640px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:.78rem}
 .piede a{color:var(--muted)}
 </style>
@@ -221,7 +226,8 @@ var SPECCHIO = [
 
 /* Blocco 3 · La prova. m = crocette, c = completamento.
    Per le crocette: ok = risposta giusta, e = cosa dice l'errore (seconda persona). */
-var TEMPO_SCADUTO = 'Il tempo è finito prima della risposta. 97 secondi sembrano tanti finché non servono due passaggi di fila.';
+var DURATA_PROVA = 97 * 9; /* un tempo solo per tutta la prova, come all'esame */
+var NON_RISPOSTA = 'Non hai risposto. Con 97 secondi a domanda il tempo va diviso bene: chi si incaglia su una domanda non arriva alle altre.';
 var PROVA = [
   {id: 'F1', mat: 'Fisica', c: 'c-fis', liv: 'facile', pt: 1, t: 'm',
    q: '72 km/h corrispondono a:',
@@ -438,7 +444,10 @@ PROFILO.forEach(function (q) { PASSI.push({tipo: 'scelta', q: q, blocco: 'Chi se
 SPECCHIO.forEach(function (q) { PASSI.push({tipo: 'specchio', q: q, blocco: 'Lo specchio'}); });
 PASSI.push({tipo: 'voto'});
 PASSI.push({tipo: 'introProva'});
+var IDX_PROVA = PASSI.length;
 PROVA.forEach(function (q, i) { PASSI.push({tipo: 'prova', q: q, i: i}); });
+var IDX_CONSEGNA = PASSI.length;
+PASSI.push({tipo: 'consegna'});
 PASSI.push({tipo: 'k1', blocco: 'I conti', q: {id: 'K1', q: 'Secondo te, quante ore servono per studiare tutto il programma una volta?', o: K1}});
 PASSI.push({tipo: 'k2'});
 PASSI.push({tipo: 'k3', blocco: 'I conti', q: {id: 'K3', q: 'Quante ore riesci a studiare a settimana, davvero?', o: K3}});
@@ -447,13 +456,20 @@ PASSI.push({tipo: 'k3', blocco: 'I conti', q: {id: 'K3', q: 'Quante ore riesci a
    massimo = il passo più avanti raggiunto: avanti e indietro si muovono tra -1 e massimo. */
 var passo = -1, massimo = -1;
 S.scelte = {};   /* indice del passo → indice dell'opzione scelta */
-S.inizio = {};   /* id domanda della prova → quando è partito il suo timer */
+S.ris = {};      /* id domanda della prova → risposta data (testo) */
+S.inizioProva = null; S.consegnata = false;
+var sveglia = null;
+/* fin dove si può andare avanti: durante la prova si possono saltare le domande fino alla consegna */
+function limite() { return (S.inizioProva && !S.consegnata && passo >= IDX_PROVA - 1 && passo <= IDX_CONSEGNA) ? Math.max(massimo, IDX_CONSEGNA) : massimo; }
 
 function vai(n) {
-  passo = Math.max(-1, Math.min(n, massimo, PASSI.length));
+  var lim = limite();
+  passo = Math.max(-1, Math.min(n, lim, PASSI.length));
+  if (passo > massimo) massimo = passo;
   mostra();
 }
 function avanti() {
+  if (passo === IDX_CONSEGNA && !S.consegnata) return mostra();
   passo++;
   if (passo > massimo) massimo = passo;
   mostra();
@@ -481,7 +497,7 @@ function deriva() {
 function nav(nota) {
   var dietro = el('button', {class: 'nav-b', type: 'button', text: '← Indietro', onclick: function () { vai(passo - 1); }});
   var dopo = el('button', {class: 'nav-b', type: 'button', text: 'Avanti →', onclick: function () { vai(passo + 1); }});
-  if (passo >= massimo || passo >= PASSI.length) { dopo.disabled = true; dopo.setAttribute('aria-hidden', 'true'); dopo.style.visibility = 'hidden'; }
+  if (passo >= limite() || passo >= PASSI.length) { dopo.disabled = true; dopo.setAttribute('aria-hidden', 'true'); dopo.style.visibility = 'hidden'; }
   return el('div', null, [el('div', {class: 'nav'}, [dietro, dopo]), nota ? el('p', {class: 'nav-nota', text: nota}) : null]);
 }
 
@@ -492,7 +508,8 @@ function mostra() {
   if (p.tipo === 'scelta' || p.tipo === 'specchio' || p.tipo === 'k1' || p.tipo === 'k3') return domandaScelta(p);
   if (p.tipo === 'voto') return schermoVoto();
   if (p.tipo === 'introProva') return introProva();
-  if (p.tipo === 'prova') return S.prova[p.q.id] ? rivediProva(p.q, p.i) : domandaProva(p.q, p.i);
+  if (p.tipo === 'prova') return domandaProva(p.q, p.i);
+  if (p.tipo === 'consegna') return schermoConsegna();
   if (p.tipo === 'k2') return schermoK2();
 }
 
@@ -541,14 +558,83 @@ function schermoVoto() {
 }
 
 function introProva() {
+  var min = Math.floor(DURATA_PROVA / 60), sec = DURATA_PROVA % 60;
+  var testo = S.consegnata
+    ? [el('p', {class: 'lead', text: 'La prova è consegnata. Puoi rivedere le domande, ma le risposte restano quelle.'})]
+    : [
+      el('p', {class: 'lead', text: 'Hai ' + min + ' minuti e ' + sec + ' secondi in tutto: 97 secondi a domanda, come all\'esame. Tre per materia, una facile, una difficile e una estremamente difficile. Le ultime tre sono a completamento: la risposta va scritta, non scelta.'}),
+      el('p', {class: 'lead', text: 'Come all\'esame puoi saltare, tornare indietro e cambiare risposta finché il tempo non finisce. Quando finisce, la prova si consegna da sola. Le risposte giuste le vedi alla fine.'})
+    ];
   schermo([
     nav(),
     el('p', {class: 'occhiello', text: 'La prova'}),
-    el('h2', {text: 'Nove domande d\'esame, 97 secondi ciascuna'}),
-    el('p', {class: 'lead', text: 'Tre per materia: una facile, una difficile, una estremamente difficile. Le ultime tre sono a completamento, come una parte dell\'esame: la risposta va scritta, non scelta.'}),
-    el('p', {class: 'lead', text: 'Quando il tempo finisce si passa alla domanda dopo. Puoi tornare a rivedere le domande, ma una risposta data resta quella: all\'esame il tempo non torna indietro. Le risposte giuste le vedi alla fine.'}),
-    el('button', {class: 'btn', type: 'button', onclick: avanti, text: 'Sono pronto, parti'})
-  ], quota());
+    el('h2', {text: 'Nove domande d\'esame, ' + min + ':' + (sec < 10 ? '0' : '') + sec + ' minuti'})
+  ].concat(testo, [
+    el('button', {class: 'btn', type: 'button', onclick: avanti, text: S.consegnata ? 'Rivedi la prova' : (S.inizioProva ? 'Torna alla prova' : 'Sono pronto, parti')})
+  ]), quota());
+}
+
+function restoProva() { return S.inizioProva ? Math.max(0, DURATA_PROVA - (Date.now() - S.inizioProva) / 1000) : DURATA_PROVA; }
+function mmss(s) { s = Math.ceil(s); var m = Math.floor(s / 60), r = s % 60; return m + ':' + (r < 10 ? '0' : '') + r; }
+
+/* il timer della prova: uno solo per tutte le nove domande */
+function timerProva() {
+  var tEl = el('span', {class: 't', text: mmss(restoProva())});
+  var bar = el('i');
+  var box = el('div', {class: 'timer', role: 'timer', 'aria-label': 'Tempo rimasto per la prova'}, [tEl, el('span', {class: 'b'}, [bar])]);
+  function giro() {
+    var rest = restoProva();
+    tEl.textContent = mmss(rest);
+    bar.style.transform = 'scaleX(' + (rest / DURATA_PROVA) + ')';
+    box.classList.toggle('meta', rest <= DURATA_PROVA / 2 && rest > 120);
+    box.classList.toggle('poco', rest <= 120);
+  }
+  giro();
+  timerId = setInterval(giro, 250);
+  return box;
+}
+function avviaProva() {
+  if (S.inizioProva) return;
+  S.inizioProva = Date.now();
+  sveglia = setInterval(function () {
+    if (!S.consegnata && restoProva() <= 0) consegna(true);
+  }, 400);
+}
+/* consegna: a mano dalla schermata di consegna, o da sola quando il tempo finisce */
+function consegna(scaduto) {
+  if (S.consegnata) return;
+  S.consegnata = true;
+  S.tempoProva = Math.round(Math.min(DURATA_PROVA, (Date.now() - S.inizioProva) / 1000));
+  S.provaScaduta = !!scaduto;
+  if (sveglia) { clearInterval(sveglia); sveglia = null; }
+  valuta();
+  var tipo = PASSI[passo] && PASSI[passo].tipo;
+  if (tipo === 'prova' || tipo === 'consegna') {
+    passo = IDX_CONSEGNA + 1;
+    if (massimo < passo) massimo = passo;
+    mostra();
+    if (scaduto) app.insertBefore(el('p', {class: 'bollo', text: 'Tempo finito: la prova è stata consegnata.'}), app.firstChild);
+  } else if (massimo < IDX_CONSEGNA + 1) {
+    massimo = IDX_CONSEGNA + 1;
+    mostra();
+  }
+}
+function valuta() {
+  S.prova = {};
+  PROVA.forEach(function (q) {
+    var risp = S.ris[q.id];
+    var r = {id: q.id, risposta: risp == null ? null : risp, scaduto: risp == null};
+    if (q.t === 'm') {
+      var o = q.o.filter(function (x) { return x.t === risp; })[0];
+      r.ok = !!(o && o.ok);
+      r.e = o ? (o.ok ? '' : o.e) : NON_RISPOSTA;
+    } else {
+      var n = norm(risp);
+      r.ok = risp != null && q.acc.map(norm).indexOf(n) >= 0;
+      if (!r.ok) r.e = risp == null ? NON_RISPOSTA : (!n ? ERR_VUOTA : (q.err[n] || ERR_ALTRO));
+    }
+    S.prova[q.id] = r;
+  });
 }
 
 function testaProva(q, i) {
@@ -558,89 +644,56 @@ function testaProva(q, i) {
   ];
 }
 
-/* una domanda della prova già data: si rivede, non si cambia */
-function rivediProva(q, i) {
-  var r = S.prova[q.id], lettere = 'ABCDE', corpo;
-  if (q.t === 'm') {
-    corpo = el('div', {class: 'opzioni'}, mescola(q.o, 1411 + i * 7).map(function (o, j) {
-      var scelta = r.risposta === o.t;
-      return el('div', {class: 'opz ferma' + (scelta ? ' scelta' : '')}, [el('span', {class: 'l', text: lettere[j]}), el('span', {text: o.t})]);
-    }));
-  } else {
-    corpo = el('div', null, [
-      el('p', {class: 'domanda', text: q.pre + ' …'}),
-      el('div', {class: 'campo'}, [el('input', {type: 'text', value: r.risposta || '', disabled: '', 'aria-label': 'La tua risposta'}), q.unita ? el('span', {text: q.unita}) : null])
-    ]);
-  }
-  schermo([nav()].concat(testaProva(q, i), [
-    el('p', {class: 'bollo', text: r.scaduto ? 'Tempo scaduto: nessuna risposta.' : 'Risposta data in ' + r.sec + ' secondi. Resta quella.'}),
-    el('h2', {class: 'domanda', text: q.q}),
-    q.seq ? el('p', {class: 'seq', text: q.seq}) : null,
-    corpo
-  ]), quota());
-}
-
 function domandaProva(q, i) {
-  var DURATA = 97, fatto = false;
-  if (!S.inizio[q.id]) S.inizio[q.id] = Date.now();
-  var inizio = S.inizio[q.id];
-  var tEl = el('span', {class: 't', text: '97'});
-  var bar = el('i');
-  var timer = el('div', {class: 'timer', role: 'timer', 'aria-label': 'Secondi rimasti'}, [tEl, el('span', {class: 'b'}, [bar])]);
-  function chiudi(risposta, opzione, resta) {
-    if (fatto) return; fatto = true;
-    var sec = Math.round((Date.now() - inizio) / 1000);
-    var r = {id: q.id, sec: Math.min(sec, DURATA), risposta: risposta, scaduto: risposta == null};
-    if (q.t === 'm') {
-      r.ok = !!(opzione && opzione.ok);
-      r.e = opzione && !opzione.ok ? opzione.e : (r.scaduto ? TEMPO_SCADUTO : '');
-    } else {
-      var n = norm(risposta);
-      r.ok = q.acc.map(norm).indexOf(n) >= 0;
-      if (!r.ok) r.e = r.scaduto ? TEMPO_SCADUTO : (!n ? ERR_VUOTA : (q.err[n] || ERR_ALTRO));
-    }
-    S.prova[q.id] = r;
-    if (!resta) return avanti();
-    if (massimo < passo + 1) massimo = passo + 1;
-    rivediProva(q, i);
-  }
-  /* se il tempo è finito mentre era su un'altra schermata, la domanda si chiude da sola e
-     si mostra come «tempo scaduto» */
-  if (Date.now() - inizio >= DURATA * 1000) return chiudi(null, null, true);
-  var corpo;
+  var ferma = S.consegnata, lettere = 'ABCDE', corpo;
+  if (!ferma) avviaProva();
+  var risp = S.ris[q.id];
   if (q.t === 'm') {
-    var lettere = 'ABCDE';
     corpo = el('div', {class: 'opzioni'}, mescola(q.o, 1411 + i * 7).map(function (o, j) {
-      return el('button', {class: 'opz', type: 'button', onclick: function () { chiudi(o.t, o); }}, [
-        el('span', {class: 'l', text: lettere[j]}), el('span', {text: o.t})
-      ]);
+      var scelta = risp === o.t;
+      var figli = [el('span', {class: 'l', text: lettere[j]}), el('span', {text: o.t})];
+      if (ferma) return el('div', {class: 'opz ferma' + (scelta ? ' scelta' : '')}, figli);
+      return el('button', {class: 'opz' + (scelta ? ' scelta' : ''), type: 'button', 'aria-pressed': String(scelta), onclick: function () { S.ris[q.id] = o.t; avanti(); }}, figli);
     }));
   } else {
-    var inp = el('input', {type: 'text', inputmode: 'decimal', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', 'aria-label': 'La tua risposta'});
-    if (q.id === 'B3') inp.setAttribute('inputmode', 'text');
-    corpo = el('form', {onsubmit: function (e) { e.preventDefault(); chiudi(inp.value.trim()); }}, [
+    var inp = el('input', {type: 'text', inputmode: q.id === 'B3' ? 'text' : 'decimal', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', 'aria-label': 'La tua risposta', value: risp || ''});
+    if (ferma) inp.disabled = true;
+    corpo = el('form', {onsubmit: function (e) { e.preventDefault(); if (!ferma) { S.ris[q.id] = inp.value.trim(); avanti(); } }}, [
       el('p', {class: 'domanda', text: q.pre + ' …'}),
       el('div', {class: 'campo'}, [inp, q.unita ? el('span', {text: q.unita}) : null]),
-      el('button', {class: 'btn', type: 'submit', text: 'Conferma'})
+      ferma ? null : el('button', {class: 'btn', type: 'submit', text: risp != null ? 'Conferma la modifica' : 'Conferma'})
     ]);
   }
-  schermo([nav('Se torni indietro, il tempo di questa domanda continua a scorrere.')].concat(testaProva(q, i), [
-    timer,
+  schermo([nav(ferma ? null : 'Puoi saltare e tornarci: il tempo è uno solo per tutta la prova.')].concat(testaProva(q, i), [
+    ferma ? el('p', {class: 'bollo', text: risp == null ? 'Nessuna risposta.' : 'Prova consegnata: la risposta resta questa.'}) : timerProva(),
     el('h2', {class: 'domanda', text: q.q}),
     q.seq ? el('p', {class: 'seq', text: q.seq}) : null,
     corpo
   ]), quota());
-  if (q.t === 'c') setTimeout(function () { var f = app.querySelector('.campo input'); if (f) f.focus(); }, 60);
-  function giro() {
-    var rest = Math.max(0, DURATA - (Date.now() - inizio) / 1000);
-    tEl.textContent = String(Math.ceil(rest));
-    bar.style.transform = 'scaleX(' + (rest / DURATA) + ')';
-    timer.classList.toggle('meta', rest <= 48 && rest > 15);
-    timer.classList.toggle('poco', rest <= 15);
-    if (rest <= 0) chiudi(null);
+  if (!ferma && q.t === 'c') setTimeout(function () { var f = app.querySelector('.campo input'); if (f) f.focus(); }, 60);
+}
+
+function schermoConsegna() {
+  var fatte = PROVA.filter(function (q) { return S.ris[q.id] != null; }).length;
+  var griglia = el('div', {class: 'griglia'}, PROVA.map(function (q, i) {
+    var data = S.ris[q.id] != null;
+    return el('button', {class: 'casella ' + q.c + (data ? ' data' : ''), type: 'button', onclick: function () { vai(IDX_PROVA + i); }}, [
+      el('b', {text: String(i + 1)}), el('span', {text: data ? 'risposta' : 'vuota'})
+    ]);
+  }));
+  if (S.consegnata) {
+    return schermo([nav(), el('p', {class: 'occhiello', text: 'La prova'}), el('h2', {text: 'Prova consegnata'}), griglia,
+      el('button', {class: 'btn', type: 'button', onclick: function () { vai(IDX_CONSEGNA + 1); }, text: 'Avanti'})], quota());
   }
-  giro();
-  timerId = setInterval(giro, 250);
+  schermo([
+    nav(),
+    el('p', {class: 'occhiello', text: 'La prova'}),
+    timerProva(),
+    el('h2', {text: 'Hai risposto a ' + fatte + ' domande su 9'}),
+    el('p', {class: 'lead', text: fatte < 9 ? 'Tocca un numero per tornare a una domanda. Puoi ancora cambiare tutto finché c\'è tempo.' : 'Puoi ancora ricontrollare: tocca un numero per tornare a una domanda.'}),
+    griglia,
+    el('button', {class: 'btn', type: 'button', onclick: function () { consegna(false); }, text: 'Consegna la prova'})
+  ], quota());
 }
 
 function schermoK2() {
@@ -670,6 +723,7 @@ function schermoK2() {
 
 function calcola() {
   deriva();
+  if (S.consegnata) valuta();
   var R = {};
   /* profilo */
   function ha(t) { return S.tag.indexOf(t) >= 0; }
@@ -750,7 +804,7 @@ function risultato(R) {
   if (R.errore) {
     var q = R.errore, r = S.prova[q.id];
     var giusta = q.t === 'm' ? q.o.filter(function (o) { return o.ok; })[0].t : q.giusta;
-    var tua = r.scaduto ? 'Tempo scaduto' : (r.risposta ? 'Hai risposto ' + r.risposta + (q.unita && q.t === 'c' ? ' ' + q.unita : '') : 'Risposta vuota');
+    var tua = r.scaduto ? 'Nessuna risposta' : (r.risposta ? 'Hai risposto ' + r.risposta + (q.unita && q.t === 'c' ? ' ' + q.unita : '') : 'Risposta vuota');
     bb.appendChild(el('div', {class: 'errore'}, [
       el('p', {class: 'nota', text: 'L\'errore che lo dimostra · ' + q.mat + ', ' + q.liv}),
       el('p', {class: 'q', text: q.q + (q.seq ? ' ' + q.seq : '') + (q.pre ? ' ' + q.pre + ' …' : '')}),
@@ -787,18 +841,21 @@ function risultato(R) {
   ]));
 
   /* cosa facciamo noi */
+  /* il tono dell'invito dipende dal punteggio della prova (su 18): da drastico a accondiscendente */
+  var fascia = R.punti >= 16 ? 'alto' : R.punti >= 12 ? 'buono' : R.punti >= 9 ? 'medio' : 'basso';
   var testi = {
-    alta: 'Questi numeri li abbiamo visti tante volte, e si possono cambiare. Nella prossima live, gratuita, ti facciamo vedere come si prepara questo esame con il tempo che resta.',
-    media: 'Il metodo che usi ti ha portato fin qui, e con qualche cambio ti porta fino al ' + a.nome + '. Nella prossima live ti facciamo vedere quali.',
-    bassa: 'I conti tornano e la prova lo conferma. Se vuoi capire come usare le ore che ti avanzano, ne parliamo nella prossima live.'
+    alto: 'Lo sai: facciamo live settimanali dove puoi esercitarti con noi. Ti aspettiamo.',
+    buono: 'Hai una buona base. Ti manca allenarti sotto tempo, e nelle live gratuite lo facciamo insieme ogni settimana.',
+    medio: 'A questo ritmo il ' + a.nome + ' è rischioso: il metodo ti lascia scoperto proprio dove l\'esame punisce. Nella prossima live, gratuita, ti facciamo vedere cosa cambiare e in che ordine.',
+    basso: 'Così all\'esame non ci arrivi, e non per colpa tua: è il metodo che non regge i 97 secondi. Questi numeri li abbiamo visti tante volte e si possono cambiare, ma si cambiano adesso. Vieni alla live gratuita: ti facciamo vedere come si prepara questo esame con il tempo che resta.'
   };
   /* utm_term porta il risultato a Leadfather tramite il modulo di /evento/ */
   var term = 'p' + R.profilo + '-' + R.pilastro + '-' + R.punti + 'su18-cop' + R.copertura;
   var link = EVENTO + '?utm_source=quizfunnel&utm_medium=quiz&utm_campaign=test-97-secondi&utm_content=urgenza-' + R.urgenza + '&utm_term=' + encodeURIComponent(term);
   var bn = el('div', {class: 'blocco'}, [
     el('p', {class: 'occhiello', text: 'Cosa facciamo noi'}),
-    el('p', {text: testi[R.urgenza]}),
-    el('a', {class: 'btn', href: link, text: 'Iscriviti alla live'})
+    el('p', {text: testi[fascia]}),
+    el('a', {class: 'btn', href: link, text: 'VAI ALLA LEZIONE LIVE GRATUITA'})
   ]);
   blocchi.push(bn);
 
