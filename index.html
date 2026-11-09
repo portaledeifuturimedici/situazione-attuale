@@ -119,6 +119,17 @@ h2{font-size:clamp(1.35rem,5vw,1.75rem);margin-bottom:18px}
 .errore .giusta{color:var(--ok);font-weight:650}
 .passo{border:1.5px solid var(--oro)}
 .passo .quando{font:700 .8rem/1.3 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--oro);margin-bottom:8px}
+.nav{display:flex;justify-content:space-between;align-items:center;margin:-6px 0 14px}
+.nav-b{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);font:650 .88rem/1 var(--sans);cursor:pointer}
+.nav-b:hover{color:var(--ink);border-color:var(--muted)}
+.nav-b:focus-visible{outline:3px solid var(--ciano);outline-offset:2px}
+.nav-nota{margin:-6px 0 12px;font-size:.78rem;color:var(--muted)}
+.opz.scelta{border-color:var(--oro);background:var(--sup2)}
+.opz.scelta .l{border-color:var(--oro);color:var(--oro)}
+.opz.ferma{cursor:default}
+.opz.ferma:not(.scelta){opacity:.6}
+.bollo{display:inline-block;margin:14px 0 6px;padding:6px 12px;border-radius:999px;background:var(--sup2);font:600 .82rem/1.3 var(--mono);color:var(--oro)}
+.campo input:disabled{opacity:.85}
 .piede{max-width:640px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:.78rem}
 .piede a{color:var(--muted)}
 </style>
@@ -424,30 +435,65 @@ function dataPasso(quando) {
 
 var PASSI = [];
 PROFILO.forEach(function (q) { PASSI.push({tipo: 'scelta', q: q, blocco: 'Chi sei'}); });
-SPECCHIO.forEach(function (q) { PASSI.push({tipo: 'specchio', q: q}); });
+SPECCHIO.forEach(function (q) { PASSI.push({tipo: 'specchio', q: q, blocco: 'Lo specchio'}); });
 PASSI.push({tipo: 'voto'});
 PASSI.push({tipo: 'introProva'});
 PROVA.forEach(function (q, i) { PASSI.push({tipo: 'prova', q: q, i: i}); });
-PASSI.push({tipo: 'k1'});
+PASSI.push({tipo: 'k1', blocco: 'I conti', q: {id: 'K1', q: 'Secondo te, quante ore servono per studiare tutto il programma una volta?', o: K1}});
 PASSI.push({tipo: 'k2'});
-PASSI.push({tipo: 'k3'});
-var passo = -1;
-function avanti() { passo++; mostra(); }
+PASSI.push({tipo: 'k3', blocco: 'I conti', q: {id: 'K3', q: 'Quante ore riesci a studiare a settimana, davvero?', o: K3}});
+
+/* passo = schermo mostrato (-1 intro, PASSI.length risultato).
+   massimo = il passo più avanti raggiunto: avanti e indietro si muovono tra -1 e massimo. */
+var passo = -1, massimo = -1;
+S.scelte = {};   /* indice del passo → indice dell'opzione scelta */
+S.inizio = {};   /* id domanda della prova → quando è partito il suo timer */
+
+function vai(n) {
+  passo = Math.max(-1, Math.min(n, massimo, PASSI.length));
+  mostra();
+}
+function avanti() {
+  passo++;
+  if (passo > massimo) massimo = passo;
+  mostra();
+}
 function quota() { return (passo + 1) / (PASSI.length + 1); }
 
+/* le risposte si ricalcolano sempre da S.scelte: cambiare una risposta vecchia non lascia
+   tag o punti doppi */
+function deriva() {
+  S.tag = []; S.pil = {O: 0, Ca: 0, R: 0}; S.risposte = {}; S.k1 = null; S.k3 = null;
+  PASSI.forEach(function (p, idx) {
+    var i = S.scelte[idx];
+    if (i == null || !p.q || !p.q.o) return;
+    var o = p.q.o[i];
+    S.risposte[p.q.id] = o.t;
+    if (p.tipo === 'scelta') S.tag = S.tag.concat(o.tag);
+    if (p.tipo === 'specchio') Object.keys(o.p).forEach(function (k) { S.pil[k] += o.p[k]; });
+    if (p.tipo === 'k1') S.k1 = o.v;
+    if (p.tipo === 'k3') S.k3 = o.v;
+  });
+  if (massimo > PASSI.findIndex(function (p) { return p.tipo === 'voto'; })) S.risposte.S6 = S.voto;
+  S.risposte.K2 = 'F ' + S.k2.Fisica + ' · C ' + S.k2.Chimica + ' · B ' + S.k2.Biologia;
+}
+
+function nav(nota) {
+  var dietro = el('button', {class: 'nav-b', type: 'button', text: '← Indietro', onclick: function () { vai(passo - 1); }});
+  var dopo = el('button', {class: 'nav-b', type: 'button', text: 'Avanti →', onclick: function () { vai(passo + 1); }});
+  if (passo >= massimo || passo >= PASSI.length) { dopo.disabled = true; dopo.setAttribute('aria-hidden', 'true'); dopo.style.visibility = 'hidden'; }
+  return el('div', null, [el('div', {class: 'nav'}, [dietro, dopo]), nota ? el('p', {class: 'nav-nota', text: nota}) : null]);
+}
+
 function mostra() {
+  if (passo < 0) return intro();
   var p = PASSI[passo];
   if (!p) return risultato();
-  if (p.tipo === 'scelta') return domandaScelta(p.q, 'Chi sei', function (o) { S.risposte[p.q.id] = o.t; S.tag = S.tag.concat(o.tag); });
-  if (p.tipo === 'specchio') return domandaScelta(p.q, 'Lo specchio', function (o) {
-    S.risposte[p.q.id] = o.t; Object.keys(o.p).forEach(function (k) { S.pil[k] += o.p[k]; });
-  });
+  if (p.tipo === 'scelta' || p.tipo === 'specchio' || p.tipo === 'k1' || p.tipo === 'k3') return domandaScelta(p);
   if (p.tipo === 'voto') return schermoVoto();
   if (p.tipo === 'introProva') return introProva();
-  if (p.tipo === 'prova') return domandaProva(p.q, p.i);
-  if (p.tipo === 'k1') return domandaScelta({id: 'K1', q: 'Secondo te, quante ore servono per studiare tutto il programma una volta?', o: K1}, 'I conti', function (o) { S.k1 = o.v; S.risposte.K1 = o.t; });
+  if (p.tipo === 'prova') return S.prova[p.q.id] ? rivediProva(p.q, p.i) : domandaProva(p.q, p.i);
   if (p.tipo === 'k2') return schermoK2();
-  if (p.tipo === 'k3') return domandaScelta({id: 'K3', q: 'Quante ore riesci a studiare a settimana, davvero?', o: K3}, 'I conti', function (o) { S.k3 = o.v; S.risposte.K3 = o.t; });
 }
 
 function intro() {
@@ -461,18 +507,20 @@ function intro() {
       el('li', {html: '<b>2</b>La prova: nove domande d\'esame, dalla facile all\'estrema.'}),
       el('li', {html: '<b>3</b>I conti: quanto programma vedi prima dell\'appello.'})
     ]),
-    el('button', {class: 'btn', type: 'button', onclick: avanti, text: 'Comincia il test'}),
-    el('p', {class: 'nota', text: 'Ci vogliono circa sette minuti. Niente calcolatrice: all\'esame non c\'è.'})
+    el('button', {class: 'btn', type: 'button', onclick: function () { massimo >= 0 ? vai(massimo) : avanti(); }, text: massimo >= 0 ? 'Riprendi il test' : 'Comincia il test'}),
+    el('p', {class: 'nota', text: 'Ci vogliono circa sette minuti. Puoi tornare indietro quando vuoi. Niente calcolatrice: all\'esame non c\'è.'})
   ]);
 }
 
-function domandaScelta(q, blocco, salva) {
-  var lettere = 'ABCDE';
+function domandaScelta(p) {
+  var q = p.q, lettere = 'ABCDE', qui = passo;
   schermo([
-    el('p', {class: 'occhiello', text: blocco}),
+    nav(),
+    el('p', {class: 'occhiello', text: p.blocco}),
     el('h2', {text: q.q}),
     el('div', {class: 'opzioni'}, q.o.map(function (o, i) {
-      return el('button', {class: 'opz', type: 'button', onclick: function () { salva(o); avanti(); }}, [
+      var scelta = S.scelte[qui] === i;
+      return el('button', {class: 'opz' + (scelta ? ' scelta' : ''), type: 'button', 'aria-pressed': String(scelta), onclick: function () { S.scelte[qui] = i; avanti(); }}, [
         el('span', {class: 'l', text: lettere[i]}), el('span', {text: o.t})
       ]);
     }))
@@ -484,29 +532,62 @@ function schermoVoto() {
   var r = el('input', {type: 'range', min: '1', max: '10', step: '1', value: String(S.voto), 'aria-label': 'Voto al tuo metodo da 1 a 10',
     oninput: function () { S.voto = +r.value; out.textContent = r.value; }});
   schermo([
+    nav(),
     el('p', {class: 'occhiello', text: 'Lo specchio'}),
     el('h2', {text: 'Da 1 a 10, quanto il tuo metodo di adesso ti porta a passare il ' + appello().nome + '?'}),
     el('div', {class: 'cursore'}, [out, r, el('div', {class: 'estremi'}, [el('span', {text: '1 · per niente'}), el('span', {text: '10 · sicuro'})])]),
-    el('button', {class: 'btn', type: 'button', onclick: function () { S.risposte.S6 = S.voto; avanti(); }, text: 'Avanti'})
+    el('button', {class: 'btn', type: 'button', onclick: avanti, text: 'Avanti'})
   ], quota());
 }
 
 function introProva() {
   schermo([
+    nav(),
     el('p', {class: 'occhiello', text: 'La prova'}),
     el('h2', {text: 'Nove domande d\'esame, 97 secondi ciascuna'}),
     el('p', {class: 'lead', text: 'Tre per materia: una facile, una difficile, una estremamente difficile. Le ultime tre sono a completamento, come una parte dell\'esame: la risposta va scritta, non scelta.'}),
-    el('p', {class: 'lead', text: 'Quando il tempo finisce si passa alla domanda dopo. Le risposte giuste le vedi alla fine.'}),
+    el('p', {class: 'lead', text: 'Quando il tempo finisce si passa alla domanda dopo. Puoi tornare a rivedere le domande, ma una risposta data resta quella: all\'esame il tempo non torna indietro. Le risposte giuste le vedi alla fine.'}),
     el('button', {class: 'btn', type: 'button', onclick: avanti, text: 'Sono pronto, parti'})
   ], quota());
 }
 
+function testaProva(q, i) {
+  return [
+    el('p', {class: 'occhiello', text: 'La prova · ' + (i + 1) + ' di 9'}),
+    el('div', null, [el('span', {class: 'chip ' + q.c, text: q.mat}), el('span', {class: 'chip c-oro', text: q.liv})])
+  ];
+}
+
+/* una domanda della prova già data: si rivede, non si cambia */
+function rivediProva(q, i) {
+  var r = S.prova[q.id], lettere = 'ABCDE', corpo;
+  if (q.t === 'm') {
+    corpo = el('div', {class: 'opzioni'}, mescola(q.o, 1411 + i * 7).map(function (o, j) {
+      var scelta = r.risposta === o.t;
+      return el('div', {class: 'opz ferma' + (scelta ? ' scelta' : '')}, [el('span', {class: 'l', text: lettere[j]}), el('span', {text: o.t})]);
+    }));
+  } else {
+    corpo = el('div', null, [
+      el('p', {class: 'domanda', text: q.pre + ' …'}),
+      el('div', {class: 'campo'}, [el('input', {type: 'text', value: r.risposta || '', disabled: '', 'aria-label': 'La tua risposta'}), q.unita ? el('span', {text: q.unita}) : null])
+    ]);
+  }
+  schermo([nav()].concat(testaProva(q, i), [
+    el('p', {class: 'bollo', text: r.scaduto ? 'Tempo scaduto: nessuna risposta.' : 'Risposta data in ' + r.sec + ' secondi. Resta quella.'}),
+    el('h2', {class: 'domanda', text: q.q}),
+    q.seq ? el('p', {class: 'seq', text: q.seq}) : null,
+    corpo
+  ]), quota());
+}
+
 function domandaProva(q, i) {
-  var inizio = Date.now(), fatto = false, DURATA = 97;
+  var DURATA = 97, fatto = false;
+  if (!S.inizio[q.id]) S.inizio[q.id] = Date.now();
+  var inizio = S.inizio[q.id];
   var tEl = el('span', {class: 't', text: '97'});
   var bar = el('i');
   var timer = el('div', {class: 'timer', role: 'timer', 'aria-label': 'Secondi rimasti'}, [tEl, el('span', {class: 'b'}, [bar])]);
-  function chiudi(risposta, opzione) {
+  function chiudi(risposta, opzione, resta) {
     if (fatto) return; fatto = true;
     var sec = Math.round((Date.now() - inizio) / 1000);
     var r = {id: q.id, sec: Math.min(sec, DURATA), risposta: risposta, scaduto: risposta == null};
@@ -519,8 +600,13 @@ function domandaProva(q, i) {
       if (!r.ok) r.e = r.scaduto ? TEMPO_SCADUTO : (!n ? ERR_VUOTA : (q.err[n] || ERR_ALTRO));
     }
     S.prova[q.id] = r;
-    avanti();
+    if (!resta) return avanti();
+    if (massimo < passo + 1) massimo = passo + 1;
+    rivediProva(q, i);
   }
+  /* se il tempo è finito mentre era su un'altra schermata, la domanda si chiude da sola e
+     si mostra come «tempo scaduto» */
+  if (Date.now() - inizio >= DURATA * 1000) return chiudi(null, null, true);
   var corpo;
   if (q.t === 'm') {
     var lettere = 'ABCDE';
@@ -538,23 +624,23 @@ function domandaProva(q, i) {
       el('button', {class: 'btn', type: 'submit', text: 'Conferma'})
     ]);
   }
-  schermo([
-    el('p', {class: 'occhiello', text: 'La prova · ' + (i + 1) + ' di 9'}),
-    el('div', null, [el('span', {class: 'chip ' + q.c, text: q.mat}), el('span', {class: 'chip c-oro', text: q.liv})]),
+  schermo([nav('Se torni indietro, il tempo di questa domanda continua a scorrere.')].concat(testaProva(q, i), [
     timer,
     el('h2', {class: 'domanda', text: q.q}),
     q.seq ? el('p', {class: 'seq', text: q.seq}) : null,
     corpo
-  ], quota());
-  if (q.t === 'c') setTimeout(function () { var f = app.querySelector('input'); if (f) f.focus(); }, 60);
-  timerId = setInterval(function () {
+  ]), quota());
+  if (q.t === 'c') setTimeout(function () { var f = app.querySelector('.campo input'); if (f) f.focus(); }, 60);
+  function giro() {
     var rest = Math.max(0, DURATA - (Date.now() - inizio) / 1000);
     tEl.textContent = String(Math.ceil(rest));
     bar.style.transform = 'scaleX(' + (rest / DURATA) + ')';
     timer.classList.toggle('meta', rest <= 48 && rest > 15);
     timer.classList.toggle('poco', rest <= 15);
     if (rest <= 0) chiudi(null);
-  }, 250);
+  }
+  giro();
+  timerId = setInterval(giro, 250);
 }
 
 function schermoK2() {
@@ -571,17 +657,19 @@ function schermoK2() {
     return el('div', {class: 'cont ' + u.c}, [el('div', {class: 'riga'}, [el('h3', {text: m}), meno, out, piu]), lista]);
   });
   schermo([
+    nav(),
     el('p', {class: 'occhiello', text: 'I conti'}),
     el('h2', {text: 'Quante unità didattiche hai già studiato abbastanza bene da rispondere a una domanda d\'esame?'}),
     el('p', {class: 'lead', text: 'Non quelle che hai letto: quelle su cui stamattina sapresti rispondere. Contiamo in ordine, dalla prima.'}),
     el('div', {class: 'conts'}, conts),
-    el('button', {class: 'btn', type: 'button', onclick: function () { S.risposte.K2 = 'F ' + S.k2.Fisica + ' · C ' + S.k2.Chimica + ' · B ' + S.k2.Biologia; avanti(); }, text: 'Avanti'})
+    el('button', {class: 'btn', type: 'button', onclick: avanti, text: 'Avanti'})
   ], quota());
 }
 
 /* ================= CALCOLI ================= */
 
 function calcola() {
+  deriva();
   var R = {};
   /* profilo */
   function ha(t) { return S.tag.indexOf(t) >= 0; }
@@ -627,9 +715,10 @@ function calcola() {
 function risultato(R) {
   R = R || calcola();
   passo = PASSI.length;
+  if (massimo < passo) massimo = passo;
   avanz.style.width = '100%';
   var P = PROFILI[R.profilo], pil = PILASTRI[R.pilastro];
-  var blocchi = [];
+  var blocchi = [nav()];
 
   blocchi.push(el('div', null, [
     el('p', {class: 'occhiello', text: 'Il tuo profilo'}),
