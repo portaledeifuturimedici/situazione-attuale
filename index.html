@@ -260,15 +260,15 @@ var PROVA = [
    ],
    x: 'n = m / MM = 36 / 18 = 2 mol.'},
   {id: 'F2', mat: 'Fisica', c: 'c-fis', liv: 'difficile', pt: 2, t: 'm',
-   q: 'Il raggio di un\'arteriola si dimezza. A parità di differenza di pressione e di lunghezza del vaso, per la legge di Poiseuille la portata diventa:',
+   q: 'Un condotto cilindrico orizzontale di raggio R e lunghezza L è percorso da un fluido viscoso con portata Q, in regime di moto laminare. Tra i capi del condotto si misura una caduta di pressione ΔP. Se, a parità di portata e delle altre condizioni, il raggio si dimezza e la lunghezza raddoppia, la quantità ΔP:',
    o: [
-    {t: 'la metà', e: 'Hai pensato a una proporzionalità diretta: la legge di Poiseuille non te la ricordavi.'},
-    {t: 'un quarto', e: 'Hai ragionato sull\'area della sezione (r²): il concetto lo ricordi, la legge no.'},
-    {t: 'un ottavo', e: 'Hai usato r³: eri vicino, ma la potenza è la quarta.'},
-    {t: 'un sedicesimo', ok: true},
-    {t: 'il doppio', e: 'Hai confuso la portata con la velocità dell\'equazione di continuità.'}
+    {t: 'diventa il doppio', e: 'Hai guardato solo la lunghezza: il raggio, che nella legge pesa alla quarta, ti è sfuggito.'},
+    {t: 'diventa 8 volte più grande', e: 'Hai usato r² invece di r⁴: hai ragionato con la sezione del tubo, non con la legge di Poiseuille.'},
+    {t: 'diventa 16 volte più grande', e: 'Il raggio alla quarta l\'hai visto, la lunghezza no: con due cambi insieme, uno si perde per strada.'},
+    {t: 'diventa 32 volte più grande', ok: true},
+    {t: 'diventa 1/32 di quella iniziale', e: 'Hai capovolto la legge: a parità di portata, un tubo più stretto e più lungo chiede più pressione, non meno.'}
    ],
-   x: 'La portata è proporzionale alla quarta potenza del raggio, Q ∝ r⁴. (1/2)⁴ = 1/16.'},
+   x: 'Per Poiseuille, a portata costante, ΔP = 8ηLQ / (πR⁴). La lunghezza raddoppia: ×2. Il raggio si dimezza, R⁴ diventa 1/16: ×16. In tutto 2 × 16 = 32.'},
   {id: 'B2', mat: 'Biologia', c: 'c-bio', liv: 'difficile', pt: 2, t: 'm',
    q: 'Una donna portatrice sana di emofilia A ha un figlio con un uomo non affetto. Il figlio è maschio. Qual è la probabilità che sia emofilico?',
    o: [
