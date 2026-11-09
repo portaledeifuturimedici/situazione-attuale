@@ -148,6 +148,9 @@ h2{font-size:clamp(1.35rem,5vw,1.75rem);margin-bottom:18px}
 .carta .tua{color:var(--ko);font-weight:650}
 .carta .giusta{color:var(--ok);font-weight:650}
 .carta .x{color:var(--muted);font-size:.9rem;margin-top:12px}
+.carta .esito{float:right;margin:0;font:700 .78rem/1.9 var(--mono)}
+.carta .esito.ok{color:var(--ok)}.carta .esito.ko{color:var(--ko)}
+.carta.giu{border-color:color-mix(in srgb,var(--ok) 45%,var(--line))}
 .carta .perche{font-weight:600;margin:0}
 .piede{max-width:640px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:.78rem}
 .piede a{color:var(--muted)}
@@ -832,14 +835,23 @@ function risultato(R) {
   }
   blocchi.push(bb);
 
-  /* rivedi gli errori: un mazzo di carte da scorrere, solo i fronti */
+  /* rivedi gli errori: tutte e nove le domande in un mazzo da scorrere, solo i fronti */
   var sbagliate = PROVA.filter(function (q) { return !(S.prova[q.id] && S.prova[q.id].ok); });
-  if (sbagliate.length) {
-    var carte = sbagliate.map(function (q) {
+  if (true) {
+    var carte = PROVA.map(function (q) {
+      var giu = !!(S.prova[q.id] && S.prova[q.id].ok);
       var r = S.prova[q.id] || {scaduto: true, e: NON_RISPOSTA};
       var giusta = q.t === 'm' ? q.o.filter(function (o) { return o.ok; })[0].t : q.giusta;
       var tua = r.scaduto ? 'Nessuna risposta' : (r.risposta ? r.risposta + (q.t === 'c' && q.unita ? ' ' + q.unita : '') : 'Risposta vuota');
+      if (giu) return el('article', {class: 'carta giu'}, [
+        el('p', {class: 'esito ok', text: '✓ Giusta'}),
+        el('div', null, [el('span', {class: 'chip ' + q.c, text: q.mat}), el('span', {class: 'chip c-oro', text: q.liv})]),
+        el('p', {class: 'q', text: q.q + (q.seq ? ' ' + q.seq : '') + (q.pre ? ' ' + q.pre + ' …' : '')}),
+        el('p', {class: 'riga-r'}, [el('span', {text: 'La tua'}), el('b', {class: 'giusta', text: tua})]),
+        el('p', {class: 'x', text: q.x})
+      ]);
       return el('article', {class: 'carta'}, [
+        el('p', {class: 'esito ko', text: r.scaduto ? '– Senza risposta' : '✗ Sbagliata'}),
         el('div', null, [el('span', {class: 'chip ' + q.c, text: q.mat}), el('span', {class: 'chip c-oro', text: q.liv})]),
         el('p', {class: 'q', text: q.q + (q.seq ? ' ' + q.seq : '') + (q.pre ? ' ' + q.pre + ' …' : '')}),
         el('p', {class: 'riga-r'}, [el('span', {text: 'La tua'}), el('b', {class: 'tua', text: tua})]),
@@ -875,7 +887,7 @@ function risultato(R) {
     });
     blocchi.push(el('div', {class: 'blocco'}, [
       el('p', {class: 'occhiello', text: 'Rivedi gli errori'}),
-      el('h2', {text: sbagliate.length === 1 ? 'Una domanda da rivedere' : sbagliate.length + ' domande da rivedere'}),
+      el('h2', {text: (9 - sbagliate.length) + ' giuste, ' + sbagliate.length + ' da rivedere'}),
       el('div', {class: 'mazzo-testa'}, [conta, prima, dopo]),
       mazzo
     ]));
