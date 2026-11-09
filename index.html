@@ -387,7 +387,7 @@ var S = {
 };
 var app = document.getElementById('app');
 var avanz = document.getElementById('avanz');
-var timerId = null;
+var timerId = null, timerPronto = null;
 
 (function leggiUtm() {
   try {
@@ -418,6 +418,7 @@ function schermo(nodi, quota) {
   app.innerHTML = '';
   var box = el('div', {class: 'schermo'}, nodi);
   app.appendChild(box);
+  if (timerPronto) { timerId = setInterval(timerPronto, 250); timerPronto = null; }
   if (quota != null) avanz.style.width = Math.round(quota * 100) + '%';
   window.scrollTo(0, 0);
   var primo = box.querySelector('h1,h2');
@@ -649,7 +650,7 @@ function timerProva() {
     box.classList.toggle('poco', rest <= 120);
   }
   giro();
-  timerId = setInterval(giro, 250);
+  timerPronto = giro; /* parte in schermo(), dopo che la schermata è montata */
   return box;
 }
 function avviaProva() {
