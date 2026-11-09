@@ -120,6 +120,11 @@ h2{font-size:clamp(1.35rem,5vw,1.75rem);margin-bottom:18px}
 .passo{border:1.5px solid var(--oro)}
 .passo .quando{font:700 .8rem/1.3 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--oro);margin-bottom:8px}
 .nav{display:flex;justify-content:space-between;align-items:center;margin:-6px 0 14px}
+.video{display:block;margin-top:16px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--sup);text-decoration:none;color:inherit}
+.video img{display:block;width:100%;height:auto}
+.video div{padding:12px 14px}
+.video b{display:block;margin-bottom:4px}
+.video span{color:var(--muted);font-size:.9rem}
 .nav-b{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);font:650 .88rem/1 var(--sans);cursor:pointer}
 .nav-b:hover{color:var(--ink);border-color:var(--muted)}
 .nav-b:focus-visible{outline:3px solid var(--ciano);outline-offset:2px}
@@ -828,6 +833,151 @@ function calcola() {
 
 /* ================= RISULTATO ================= */
 
+/* ================= REPORT IN PDF ================= */
+/* Si crea sul dispositivo (jsPDF, caricato solo al clic): niente viene inviato. Il testo si ricava dalle
+   stesse sezioni mostrate nel risultato, così PDF e pagina dicono sempre le stesse cose. */
+var JSPDF_URL = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+function caricaJsPdf(fatto, errore) {
+  if (window.jspdf && window.jspdf.jsPDF) return fatto();
+  var sc = document.createElement('script');
+  sc.src = JSPDF_URL; sc.onload = fatto; sc.onerror = errore;
+  document.head.appendChild(sc);
+}
+function pulisciPdf(t) {
+  var m = {'Δ': 'delta ', 'ρ': 'rho', 'μ': 'micro', 'π': 'pi', 'Ω': 'ohm', '→': '->', '←': '<-', '≈': '~', '≤': '<=', '≥': '>=', '−': '-', '⁻': '-', '⁺': '+',
+    '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9', '⁰': '0', '⁴': '^4', '⁵': '^5', '⁶': '^6', '⁷': '^7', '⁸': '^8', '⁹': '^9',
+    '✓': '', '✗': '', '‹': '<', '›': '>', '′': '\'', '″': '"', ' ': ' ', ' ': ' ', ' ': ' '};
+  return String(t).replace(/[^\u0000-ÿ]/g, function (c) {
+    if (m[c] != null) return m[c];
+    return ('‘’“”–—…•€™').indexOf(c) >= 0 ? c : '';
+  }).replace(/\s+/g, ' ').trim();
+}
+function testoDi(n) { return pulisciPdf(n.textContent || ''); }
+function estraiReport(n, out) {
+  if (!n || n.nodeType !== 1) return;
+  var c = ' ' + (n.className && n.className.baseVal == null ? n.className : '') + ' ', tag = n.tagName;
+  if (tag === 'BUTTON' || tag === 'IMG' || /\sbtn\s|\snav-b\s|\smazzo-testa\s/.test(c)) return;
+  if (/\svideo\s/.test(c)) { out.push({t: 'link', testo: testoDi(n.querySelector('b')) + '. ' + testoDi(n.querySelector('span')), url: n.href}); return; }
+  if (/\socchiello\s/.test(c)) return out.push({t: 'k', testo: testoDi(n)});
+  if (tag === 'H1') return out.push({t: 'h1', testo: testoDi(n)});
+  if (tag === 'H2') return out.push({t: 'h2', testo: testoDi(n)});
+  if (/\sgrande\s/.test(c)) return out.push({t: 'big', testo: testoDi(n)});
+  if (/\s(due|mat)\s/.test(c)) {
+    return out.push({t: 'kpi', voci: Array.prototype.map.call(n.children, function (x) { return {v: testoDi(x.querySelector('b')), l: testoDi(x.querySelector('span'))}; })});
+  }
+  if (tag === 'ARTICLE') {
+    var carta = {t: 'carta', esito: '', chip: '', righe: []};
+    Array.prototype.forEach.call(n.children, function (x) {
+      var cx = ' ' + x.className + ' ';
+      if (/\sesito\s/.test(cx)) carta.esito = testoDi(x);
+      else if (x.tagName === 'DIV') carta.chip = Array.prototype.map.call(x.children, testoDi).join(' · ');
+      else if (/\sriga-r\s/.test(cx)) carta.righe.push({e: testoDi(x.children[0]), v: testoDi(x.children[1])});
+      else if (/\sq\s/.test(cx)) carta.q = testoDi(x);
+      else if (/\sperche\s/.test(cx)) carta.perche = testoDi(x);
+      else carta.x = testoDi(x);
+    });
+    return out.push(carta);
+  }
+  if (/\serrore\s/.test(c)) {
+    var e = [];
+    Array.prototype.forEach.call(n.children, function (x) { var cx = ' ' + x.className + ' '; e.push({testo: testoDi(x), nota: /\snota\s/.test(cx), q: /\sq\s/.test(cx)}); });
+    return out.push({t: 'errore', righe: e});
+  }
+  if (tag === 'P') return out.push({t: /\squando\s/.test(c) ? 'quando' : /\snota\s/.test(c) ? 'nota' : 'p', testo: testoDi(n)});
+  Array.prototype.forEach.call(n.children, function (x) { estraiReport(x, out); });
+}
+function scaricaReport(nodi, bottone) {
+  var etichetta = bottone.textContent;
+  bottone.disabled = true; bottone.textContent = 'Preparo il PDF…';
+  function ripristina(msg) { bottone.disabled = false; bottone.textContent = msg || etichetta; }
+  caricaJsPdf(function () {
+    try { creaPdf(nodi); ripristina(); }
+    catch (e) { ripristina('Non è riuscito, riprova'); }
+  }, function () { ripristina('Senza connessione, riprova'); });
+}
+function creaPdf(nodi) {
+  var J = window.jspdf.jsPDF, doc = new J({unit: 'mm', format: 'a4'});
+  var W = 210, H = 297, M = 16, LAR = W - 2 * M, y = M;
+  var NAVY = [12, 29, 56], ORO = [216, 179, 100], ORO_T = [140, 104, 20], GRIGIO = [92, 98, 115], ROSSO = [185, 56, 44], VERDE = [35, 135, 63];
+  function col(c) { doc.setTextColor(c[0], c[1], c[2]); }
+  function serve(h) { if (y + h > H - 18) { doc.addPage(); y = M; } }
+  function righe(t, w, size, stile) { doc.setFont('helvetica', stile || 'normal'); doc.setFontSize(size); return doc.splitTextToSize(t, w); }
+  function scrivi(t, size, stile, colore, x, w, inter, dopo) {
+    x = x == null ? M : x; w = w == null ? LAR : w; inter = inter || 1.25;
+    var r = righe(t, w, size, stile), lh = size * 0.3528 * inter;
+    col(colore || NAVY);
+    r.forEach(function (riga) { serve(lh); doc.text(riga, x, y + size * 0.3528 * 0.8); y += lh; });
+    y += dopo == null ? 2 : dopo;
+  }
+  function filetto(colore, sp) { serve(4); doc.setDrawColor(colore[0], colore[1], colore[2]); doc.setLineWidth(sp || 0.3); doc.line(M, y, W - M, y); y += 4; }
+  function logo(cx, cy, k) {
+    var pts = [];
+    doc.setDrawColor(ORO[0], ORO[1], ORO[2]); doc.setLineWidth(6 * k); doc.setLineCap('round');
+    for (var a = 120; a <= 420; a += 5) { var r = a * Math.PI / 180; pts.push([cx + 22 * k * Math.cos(r), cy + 22 * k * Math.sin(r)]); }
+    pts.forEach(function (q, i) { if (i) doc.line(pts[i - 1][0], pts[i - 1][1], q[0], q[1]); });
+    doc.setFillColor(63, 211, 222); doc.circle(cx, cy - 10 * k, 4.2 * k, 'F');
+    doc.setFillColor(239, 76, 155); doc.circle(cx - 8 * k, cy + 4 * k, 4.2 * k, 'F');
+    doc.setFillColor(245, 201, 59); doc.circle(cx + 8 * k, cy + 4 * k, 4.2 * k, 'F');
+  }
+  /* testata */
+  doc.setFillColor(NAVY[0], NAVY[1], NAVY[2]); doc.rect(0, 0, W, 34, 'F');
+  logo(M + 7, 16, 0.26);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(ORO[0], ORO[1], ORO[2]);
+  doc.text('PORTALE DEI FUTURI MEDICI', M + 22, 13);
+  doc.setFontSize(20); doc.setTextColor(255, 255, 255); doc.text('Il tuo report', M + 22, 23);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(210, 220, 235);
+  doc.text('Il test dei 97 secondi · ' + pulisciPdf(new Date().toLocaleDateString('it-IT', {day: 'numeric', month: 'long', year: 'numeric'})), M + 22, 29.5);
+  y = 44;
+  var out = [];
+  nodi.forEach(function (n) { estraiReport(n, out); out.push({t: 'fine'}); });
+  out.forEach(function (b) {
+    if (b.t === 'fine') { y += 2; return; }
+    if (b.t === 'k') { serve(60); filetto(ORO, 0.6); scrivi(b.testo.toUpperCase(), 8.5, 'bold', ORO_T, M, LAR, 1.2, 1.5); }
+    else if (b.t === 'h1') scrivi(b.testo, 20, 'bold', NAVY, M, LAR, 1.15, 3);
+    else if (b.t === 'h2') scrivi(b.testo, 14, 'bold', NAVY, M, LAR, 1.2, 2.5);
+    else if (b.t === 'big') scrivi(b.testo, 28, 'bold', NAVY, M, LAR, 1.1, 2);
+    else if (b.t === 'quando') scrivi(b.testo, 11.5, 'bold', NAVY, M, LAR, 1.3, 1.5);
+    else if (b.t === 'nota') scrivi(b.testo, 8.5, 'normal', GRIGIO, M, LAR, 1.35, 2.5);
+    else if (b.t === 'p') scrivi(b.testo, 10.5, 'normal', NAVY, M, LAR, 1.4, 2.5);
+    else if (b.t === 'link') { scrivi(b.testo, 9.5, 'normal', NAVY, M, LAR, 1.35, 0.5); doc.setFont('helvetica', 'normal'); doc.setFontSize(9); col(ORO_T); serve(5); doc.textWithLink(b.url, M, y + 3, {url: b.url}); y += 7; }
+    else if (b.t === 'kpi') {
+      var n = b.voci.length, gap = 4, w = (LAR - gap * (n - 1)) / n; serve(24);
+      b.voci.forEach(function (v, i) {
+        var x = M + i * (w + gap);
+        doc.setDrawColor(ORO[0], ORO[1], ORO[2]); doc.setLineWidth(0.4); doc.roundedRect(x, y, w, 20, 2, 2, 'S');
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(18); col(NAVY); doc.text(v.v, x + w / 2, y + 10, {align: 'center'});
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(8); col(GRIGIO); doc.text(doc.splitTextToSize(v.l, w - 4), x + w / 2, y + 15, {align: 'center'});
+      });
+      y += 24;
+    }
+    else if (b.t === 'errore') {
+      var hh = 6; b.righe.forEach(function (r) { hh += righe(r.testo, LAR - 10, r.nota ? 8.5 : 10.5).length * 4.8 + 2; });
+      serve(Math.min(hh, 60));
+      var y0 = y; doc.setFillColor(250, 244, 240); 
+      b.righe.forEach(function (r) { scrivi(r.testo, r.nota ? 8.5 : 10.5, r.nota ? 'bold' : (r.q ? 'normal' : 'normal'), r.nota ? ROSSO : NAVY, M + 5, LAR - 10, 1.4, 2); });
+      doc.setDrawColor(ROSSO[0], ROSSO[1], ROSSO[2]); doc.setLineWidth(0.8); if (y > y0) doc.line(M, y0, M, y - 1.5); y += 2;
+    }
+    else if (b.t === 'carta') {
+      var ok = /Giusta/i.test(b.esito);
+      serve(46);
+      scrivi(b.esito || '', 9.5, 'bold', ok ? VERDE : ROSSO, M, LAR, 1.2, 0.5);
+      scrivi(b.chip || '', 8, 'normal', GRIGIO, M, LAR, 1.2, 1.5);
+      if (b.q) scrivi(b.q, 10.5, 'bold', NAVY, M, LAR, 1.35, 1.5);
+      b.righe.forEach(function (r) { scrivi(r.e + ': ' + r.v, 10, 'normal', /corret/i.test(r.e) || ok ? VERDE : ROSSO, M, LAR, 1.3, 0.8); });
+      if (b.x) scrivi(b.x, 9.5, 'normal', NAVY, M, LAR, 1.4, 1);
+      if (b.perche) scrivi(b.perche, 9.5, 'bold', NAVY, M, LAR, 1.4, 1);
+      y += 3; doc.setDrawColor(225, 228, 236); doc.setLineWidth(0.2); doc.line(M, y - 1.5, W - M, y - 1.5);
+    }
+  });
+  var tot = doc.getNumberOfPages();
+  for (var i = 1; i <= tot; i++) {
+    doc.setPage(i); doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(GRIGIO[0], GRIGIO[1], GRIGIO[2]);
+    doc.text('Il test dei 97 secondi · portaledeifuturimedici.com', M, H - 9);
+    doc.text('Pagina ' + i + ' di ' + tot, W - M, H - 9, {align: 'right'});
+  }
+  doc.save('report-test-97-secondi.pdf');
+}
+
 function risultato(R) {
   R = R || calcola();
   passo = PASSI.length;
@@ -878,6 +1028,22 @@ function risultato(R) {
   } else {
     bb.appendChild(el('p', null, [el('b', {text: 'Nella prova non hai sbagliato niente.'})]));
   }
+  /* video del canale: prima quello sull'argomento sbagliato (per ora solo i fluidi: F2 Poiseuille, F3 Bernoulli),
+     altrimenti uno per pilastro. Sintesi proteica e acidi-basi non hanno ancora un video sul canale. */
+  var fluidiKo = PROVA.some(function (q) { return (q.id === 'F2' || q.id === 'F3') && !(S.prova[q.id] && S.prova[q.id].ok); });
+  var VIDEO_PILASTRO = {
+    ricordare: {id: 'xiPNg73bmKc', img: 'memoria-matteo', tit: 'Il tuo buco è il ricordare: guarda questa live', txt: '«Tecniche di Memoria e Metodo di Studio», live con Matteo Piazzo. Gratis, su YouTube.'},
+    organizzarsi: {id: '-1DomllLIN8', img: 'organizzare-matteo', tit: 'Il tuo buco è l\'organizzazione: guarda questa live', txt: '«Organizzare lo Studio e il Ripasso», live con Matteo Piazzo (31 minuti). Gratis, su YouTube.'},
+    capire: {id: '7Ongc2Jbyz8', img: 'perche-non-riesci', tit: 'Il tuo buco è il capire: guarda questo video', txt: '«Perché non riesci a studiare e come fare per studiare meglio». Gratis, su YouTube.'},
+    solido: {id: 'HNIIQG8_slY', img: 'corso-fallito-matteo', tit: 'Un video per te', txt: '«Da Corso Fallito a Campione di Memoria», live con Matteo Piazzo (24 minuti). Gratis, su YouTube.'}
+  };
+  var vd = fluidiKo
+    ? {id: 'HjJ4nc8OHg0', img: 'fluidi-idrodinamica', tit: 'Hai sbagliato una domanda sui fluidi', txt: 'Sul nostro canale c\'è la lezione live «Idrodinamica: Bernoulli, Poiseuille e Laplace» (1 ora e 29). Gratis, su YouTube.'}
+    : VIDEO_PILASTRO[R.pilastro];
+  if (vd) bb.appendChild(el('a', {class: 'video', href: 'https://www.youtube.com/watch?v=' + vd.id, target: '_blank', rel: 'noopener'}, [
+    el('img', {src: 'img/' + vd.img + '.webp', alt: 'Miniatura del video', width: '640', height: '360', loading: 'lazy'}),
+    el('div', null, [el('b', {text: vd.tit}), el('span', {text: vd.txt})])
+  ]));
   blocchi.push(bb);
 
   /* rivedi gli errori: tutte e nove le domande in un mazzo da scorrere, solo i fronti */
@@ -960,6 +1126,22 @@ function risultato(R) {
     el('p', {class: 'occhiello', text: 'Il primo passo'}),
     el('p', {class: 'quando', text: dataPasso(pil.quando)}),
     el('p', {text: pil.passo})
+  ]));
+
+  /* il report da conservare: le sezioni qui sopra, in un PDF che si crea sul dispositivo */
+  var perPdf = blocchi.slice(1);
+  var btnPdf = el('button', {class: 'btn', type: 'button', text: 'Scarica il report in PDF', onclick: function () { scaricaReport(perPdf, btnPdf); }});
+  blocchi.push(el('div', {class: 'blocco'}, [
+    el('p', {class: 'occhiello', text: 'Tienilo con te'}),
+    el('p', {text: 'Il tuo profilo, la prova corretta, i conti e il primo passo, in un file da conservare e rileggere quando studi.'}),
+    btnPdf
+  ]));
+
+  /* gli appunti gratuiti */
+  blocchi.push(el('div', {class: 'blocco'}, [
+    el('p', {class: 'occhiello', text: 'Gli appunti'}),
+    el('p', {text: 'Gli appunti del semestre filtro, gratuiti e da leggere subito.'}),
+    el('a', {class: 'btn', href: 'https://portaledeifuturimedici.com/appunti/', target: '_blank', rel: 'noopener', text: 'VAI AGLI APPUNTI GRATUITI'})
   ]));
 
   /* cosa facciamo noi */
