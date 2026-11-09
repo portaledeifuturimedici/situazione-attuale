@@ -135,6 +135,20 @@ h2{font-size:clamp(1.35rem,5vw,1.75rem);margin-bottom:18px}
 .casella b{display:block;font:750 1.3rem/1 var(--mono)}
 .casella span{font-size:.75rem;color:var(--muted)}
 .casella.data{border-style:solid;border-color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent)}
+.mazzo-testa{display:flex;align-items:center;gap:10px;margin:4px 0 12px}
+.mazzo-testa .conta{margin-right:auto;font:600 .82rem/1 var(--mono);color:var(--muted)}
+.mazzo-testa button{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:var(--sup2);font:700 1.1rem/1 var(--sans);cursor:pointer}
+.mazzo-testa button:disabled{opacity:.35;cursor:default}
+.mazzo{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 38px 6px;margin:0 -18px;scroll-padding:0 38px;scrollbar-width:none;overscroll-behavior-x:contain}
+.mazzo::-webkit-scrollbar{display:none}
+.carta{flex:0 0 100%;scroll-snap-align:center;scroll-snap-stop:always;border:1px solid var(--line);border-radius:16px;background:var(--sup2);padding:16px 15px;font-size:.95rem}
+.carta .q{font-weight:600;margin:10px 0 12px}
+.carta .riga-r{display:flex;gap:8px;align-items:baseline;margin-bottom:6px}
+.carta .riga-r span{flex:none;font:700 .7rem/1.6 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);min-width:6.4em}
+.carta .tua{color:var(--ko);font-weight:650}
+.carta .giusta{color:var(--ok);font-weight:650}
+.carta .x{color:var(--muted);font-size:.9rem;margin-top:12px}
+.carta .perche{font-weight:600;margin:0}
 .piede{max-width:640px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:.78rem}
 .piede a{color:var(--muted)}
 </style>
@@ -817,6 +831,56 @@ function risultato(R) {
     bb.appendChild(el('p', null, [el('b', {text: 'Nella prova non hai sbagliato niente.'})]));
   }
   blocchi.push(bb);
+
+  /* rivedi gli errori: un mazzo di carte da scorrere, solo i fronti */
+  var sbagliate = PROVA.filter(function (q) { return !(S.prova[q.id] && S.prova[q.id].ok); });
+  if (sbagliate.length) {
+    var carte = sbagliate.map(function (q) {
+      var r = S.prova[q.id] || {scaduto: true, e: NON_RISPOSTA};
+      var giusta = q.t === 'm' ? q.o.filter(function (o) { return o.ok; })[0].t : q.giusta;
+      var tua = r.scaduto ? 'Nessuna risposta' : (r.risposta ? r.risposta + (q.t === 'c' && q.unita ? ' ' + q.unita : '') : 'Risposta vuota');
+      return el('article', {class: 'carta'}, [
+        el('div', null, [el('span', {class: 'chip ' + q.c, text: q.mat}), el('span', {class: 'chip c-oro', text: q.liv})]),
+        el('p', {class: 'q', text: q.q + (q.seq ? ' ' + q.seq : '') + (q.pre ? ' ' + q.pre + ' …' : '')}),
+        el('p', {class: 'riga-r'}, [el('span', {text: 'La tua'}), el('b', {class: 'tua', text: tua})]),
+        el('p', {class: 'riga-r'}, [el('span', {text: 'Corretta'}), el('b', {class: 'giusta', text: giusta})]),
+        el('p', {class: 'x', text: q.x}),
+        el('p', {class: 'perche', text: r.e || ''})
+      ]);
+    });
+    var mazzo = el('div', {class: 'mazzo', tabindex: '0', 'aria-label': 'Carte degli errori, scorri di lato'}, carte);
+    var conta = el('span', {class: 'conta'});
+    var prima = el('button', {type: 'button', 'aria-label': 'Carta precedente', text: '‹', onclick: function () { vaiCarta(attuale() - 1); }});
+    var dopo = el('button', {type: 'button', 'aria-label': 'Carta successiva', text: '›', onclick: function () { vaiCarta(attuale() + 1); }});
+    function attuale() {
+      var c = mazzo.scrollLeft + mazzo.clientWidth / 2, best = 0, dist = Infinity;
+      carte.forEach(function (k, i) { var m = k.offsetLeft + k.offsetWidth / 2, d = Math.abs(m - c); if (d < dist) { dist = d; best = i; } });
+      return best;
+    }
+    function vaiCarta(i) {
+      i = Math.max(0, Math.min(carte.length - 1, i));
+      var k = carte[i];
+      mazzo.scrollLeft = k.offsetLeft - (mazzo.clientWidth - k.offsetWidth) / 2;
+      segna();
+    }
+    function segna() {
+      var i = attuale();
+      conta.textContent = (i + 1) + ' di ' + carte.length;
+      prima.disabled = i === 0; dopo.disabled = i === carte.length - 1;
+    }
+    mazzo.addEventListener('scroll', segna, {passive: true});
+    mazzo.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { e.preventDefault(); vaiCarta(attuale() + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); vaiCarta(attuale() - 1); }
+    });
+    blocchi.push(el('div', {class: 'blocco'}, [
+      el('p', {class: 'occhiello', text: 'Rivedi gli errori'}),
+      el('h2', {text: sbagliate.length === 1 ? 'Una domanda da rivedere' : sbagliate.length + ' domande da rivedere'}),
+      el('div', {class: 'mazzo-testa'}, [conta, prima, dopo]),
+      mazzo
+    ]));
+    setTimeout(segna, 0);
+  }
 
   /* i conti */
   var a = appello();
