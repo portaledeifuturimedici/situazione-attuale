@@ -85,8 +85,8 @@ h2{font-size:clamp(1.35rem,5vw,1.75rem);margin-bottom:18px}
 .domanda{font-size:1.14rem;line-height:1.45;font-weight:600;margin-bottom:18px}
 .seq{font:600 1.05rem/1.4 var(--mono);padding:12px 14px;border-radius:12px;background:var(--sup2);margin:0 0 16px;overflow-wrap:anywhere}
 .campo{display:flex;gap:10px;align-items:center;margin-bottom:16px}
-.campo input,.modulo input[type=text],.modulo input[type=email],.modulo input[type=tel]{width:100%;padding:15px 16px;border:1.5px solid var(--line);border-radius:14px;background:var(--sup);font-size:1.05rem}
-.campo input:focus,.modulo input:focus{outline:none;border-color:var(--ciano)}
+.campo input{width:100%;padding:15px 16px;border:1.5px solid var(--line);border-radius:14px;background:var(--sup);font-size:1.05rem}
+.campo input:focus{outline:none;border-color:var(--ciano)}
 .campo span{font:600 1rem var(--mono);color:var(--muted);white-space:nowrap}
 .cursore{margin:10px 0 26px}
 .cursore output{display:block;text-align:center;font:800 3.4rem/1 var(--mono);color:var(--oro);margin-bottom:14px}
@@ -100,13 +100,6 @@ h2{font-size:clamp(1.35rem,5vw,1.75rem);margin-bottom:18px}
 .cont output{min-width:2ch;text-align:center;font:750 1.4rem/1 var(--mono)}
 .cont ol{margin:10px 0 0;padding-left:22px;font-size:.86rem;color:var(--muted)}
 .cont ol li.si{color:var(--ink);font-weight:600}
-.modulo label{display:block;font-weight:650;font-size:.92rem;margin:0 0 6px}
-.modulo .f{margin-bottom:14px}
-.modulo input[aria-invalid=true]{border-color:var(--ko)}
-.consent{display:flex;gap:12px;align-items:flex-start;margin:6px 0 18px;font-size:.84rem;line-height:1.5;color:var(--muted);cursor:pointer}
-.consent input{flex:none;width:22px;height:22px;margin:1px 0 0;accent-color:var(--fis)}
-.msg{min-height:1.4em;font-size:.9rem;color:var(--ko);margin-top:10px}
-.trappola{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 /* risultato */
 .blocco{border:1px solid var(--line);border-radius:var(--r);background:var(--sup);padding:20px 18px;margin-bottom:16px}
 .blocco h2{font-size:1.3rem;margin-bottom:10px}
@@ -130,7 +123,7 @@ h2{font-size:clamp(1.35rem,5vw,1.75rem);margin-bottom:18px}
 .piede a{color:var(--muted)}
 </style>
 </head>
-<body data-crm="">
+<body>
 <header class="testa">
   <a class="logo" href="/" aria-label="Portale dei Futuri Medici, vai alla home"><svg width="30" height="30" viewBox="0 0 128 128" aria-hidden="true" focusable="false"><rect width="128" height="128" rx="28" fill="#14102A"/><g transform="translate(64,64) scale(1.03) translate(0,7.2)"><path d="M -22,30 A 44,44 0 1 1 22,30" stroke="#D2E8FB" stroke-width="13" fill="none" stroke-linecap="round"/><circle cx="0" cy="-22" r="9" fill="#FFB23E"/><circle cx="-16" cy="8" r="9" fill="#2BE0E0"/><circle cx="16" cy="8" r="9" fill="#C04BFF"/></g></svg><span>Portale dei Futuri Medici</span></a>
   <button class="tema" type="button" id="tema" aria-label="Cambia tema chiaro o scuro">◐</button>
@@ -152,7 +145,6 @@ var APPELLI = [
 ];
 var ORE_PER_CFU = 15;
 var EVENTO = 'https://portaledeifuturimedici.com/evento/';
-var CRM_ATTESA_MS = 8000;
 
 /* Blocco 1 · Chi sei */
 var PROFILO = [
@@ -439,7 +431,6 @@ PROVA.forEach(function (q, i) { PASSI.push({tipo: 'prova', q: q, i: i}); });
 PASSI.push({tipo: 'k1'});
 PASSI.push({tipo: 'k2'});
 PASSI.push({tipo: 'k3'});
-PASSI.push({tipo: 'modulo'});
 var passo = -1;
 function avanti() { passo++; mostra(); }
 function quota() { return (passo + 1) / (PASSI.length + 1); }
@@ -457,7 +448,6 @@ function mostra() {
   if (p.tipo === 'k1') return domandaScelta({id: 'K1', q: 'Secondo te, quante ore servono per studiare tutto il programma una volta?', o: K1}, 'I conti', function (o) { S.k1 = o.v; S.risposte.K1 = o.t; });
   if (p.tipo === 'k2') return schermoK2();
   if (p.tipo === 'k3') return domandaScelta({id: 'K3', q: 'Quante ore riesci a studiare a settimana, davvero?', o: K3}, 'I conti', function (o) { S.k3 = o.v; S.risposte.K3 = o.t; });
-  if (p.tipo === 'modulo') return schermoModulo();
 }
 
 function intro() {
@@ -632,106 +622,17 @@ function calcola() {
   return R;
 }
 
-/* ================= MODULO ================= */
-
-var EMAIL_OK = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-function e164(s) {
-  var c = s.replace(/\D/g, '');
-  if (!c) return '';
-  if (s.trim().charAt(0) === '+') return '+' + c;
-  if (c.slice(0, 2) === '00') return '+' + c.slice(2);
-  if (c.length === 10 && c.charAt(0) === '3') return '+39' + c;
-  if (c.length === 12 && c.slice(0, 2) === '39') return '+' + c;
-  return c;
-}
-function telBuono(v) { v = v.trim(); return v.replace(/\D/g, '').length >= 8 && /^\+?[\d\s().-]{8,20}$/.test(v); }
-
-function schermoModulo() {
-  var msg = el('p', {class: 'msg', role: 'alert'});
-  var nome = el('input', {type: 'text', id: 'f-nome', name: 'nome', autocomplete: 'name', required: ''});
-  var mail = el('input', {type: 'email', id: 'f-mail', name: 'email', autocomplete: 'email', required: ''});
-  var tel = el('input', {type: 'tel', id: 'f-tel', name: 'telefono', autocomplete: 'tel', inputmode: 'tel', required: ''});
-  var ok = el('input', {type: 'checkbox', name: 'consenso', required: ''});
-  var trappola = el('input', {type: 'text', name: '_gotcha', tabindex: '-1', autocomplete: 'off'});
-  var consTesto = el('span', {html: 'Ho letto l\'<a href="/appunti/privacy.html" target="_blank" rel="noopener">informativa privacy</a> e accetto che il Portale dei Futuri Medici mi contatti per email e WhatsApp con il risultato e con gli inviti alle prossime live.'});
-  var btn = el('button', {class: 'btn', type: 'submit', text: 'Mostrami il risultato'});
-  var form = el('form', {class: 'modulo', novalidate: '', onsubmit: invia}, [
-    el('div', {class: 'f'}, [el('label', {for: 'f-nome', text: 'Nome e cognome'}), nome]),
-    el('div', {class: 'f'}, [el('label', {for: 'f-mail', text: 'Email'}), mail]),
-    el('div', {class: 'f'}, [el('label', {for: 'f-tel', text: 'Numero WhatsApp'}), tel]),
-    el('div', {class: 'trappola', 'aria-hidden': 'true'}, [trappola]),
-    el('label', {class: 'consent'}, [ok, consTesto]),
-    btn, msg
-  ]);
-  schermo([
-    el('p', {class: 'occhiello', text: 'Fatto'}),
-    el('h2', {text: 'Il tuo risultato è pronto'}),
-    el('p', {class: 'lead', text: 'Ti mandiamo il risultato anche per email, così lo ritrovi.'}),
-    form
-  ], quota());
-
-  function invia(e) {
-    e.preventDefault();
-    if (trappola.value) return;
-    mail.value = mail.value.trim().toLowerCase();
-    var campi = [[nome, nome.value.trim().length >= 2], [mail, EMAIL_OK.test(mail.value)], [tel, telBuono(tel.value)]];
-    var primo = null;
-    campi.forEach(function (c) { c[0].setAttribute('aria-invalid', String(!c[1])); if (!c[1] && !primo) primo = c[0]; });
-    if (primo) { msg.textContent = 'Controlla i campi evidenziati.'; primo.focus(); return; }
-    if (!ok.checked) { msg.textContent = 'Serve il consenso per mostrarti e mandarti il risultato.'; return; }
-    msg.textContent = '';
-    btn.disabled = true; btn.textContent = 'Un attimo…';
-    var R = calcola();
-    S.contatto = {nome: nome.value.trim().replace(/\s+/g, ' '), email: mail.value, tel: tel.value.trim(), consenso: consTesto.textContent.replace(/\s+/g, ' ').trim()};
-    var crm = document.body.getAttribute('data-crm');
-    var fatto = false;
-    function vai() { if (fatto) return; fatto = true; risultato(R); }
-    if (!crm) return vai();
-    setTimeout(vai, CRM_ATTESA_MS);
-    try {
-      fetch(crm, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload(R))})
-        .then(vai, vai);
-    } catch (x) { vai(); }
-  }
-}
-
-function payload(R) {
-  var c = S.contatto, sp = c.nome.indexOf(' ');
-  var tag = ['qf-completato', 'qf-profilo-' + R.profilo, 'qf-pilastro-' + R.pilastro, 'qf-urgenza-' + R.urgenza].concat(S.tag);
-  var err = R.errore ? (R.errore.id + ': ' + (S.prova[R.errore.id].scaduto ? 'tempo scaduto' : (S.prova[R.errore.id].risposta || 'vuota'))) : '';
-  var dati = {
-    full_name: c.nome, first_name: sp < 0 ? c.nome : c.nome.slice(0, sp), last_name: sp < 0 ? '' : c.nome.slice(sp + 1),
-    email: c.email, phone: e164(c.tel), phone_raw: c.tel,
-    consent: true, consent_text: c.consenso, consent_at: new Date().toISOString(),
-    source: 'portaledeifuturimedici.com', page: String(location.href).split('#')[0].split('?')[0], form: 'quizfunnel-97-secondi',
-    tags: tag.filter(function (t, i) { return tag.indexOf(t) === i; }).join(','),
-    qf_profilo: PROFILI[R.profilo].n,
-    qf_pilastro: R.pilastro,
-    qf_urgenza: R.urgenza,
-    qf_punteggio: R.punti,
-    qf_punteggio_materie: 'F ' + R.mat.Fisica + ' · B ' + R.mat.Biologia + ' · C ' + R.mat.Chimica,
-    qf_voto_metodo: S.voto,
-    qf_copertura: R.copertura,
-    qf_ore_mancanti_sett: Math.round(R.orePiu),
-    qf_errore: err,
-    qf_data: new Date().toISOString().slice(0, 10),
-    qf_risposte: JSON.stringify(S.risposte)
-  };
-  Object.keys(S.utm).forEach(function (k) { dati[k] = S.utm[k]; });
-  return dati;
-}
-
 /* ================= RISULTATO ================= */
 
 function risultato(R) {
   R = R || calcola();
   passo = PASSI.length;
   avanz.style.width = '100%';
-  var P = PROFILI[R.profilo], pil = PILASTRI[R.pilastro], nome = S.contatto ? S.contatto.nome.split(' ')[0] : '';
+  var P = PROFILI[R.profilo], pil = PILASTRI[R.pilastro];
   var blocchi = [];
 
   blocchi.push(el('div', null, [
-    el('p', {class: 'occhiello', text: (nome ? nome + ', il' : 'Il') + ' tuo profilo'}),
+    el('p', {class: 'occhiello', text: 'Il tuo profilo'}),
     el('h1', {text: P.n}),
     el('p', {class: 'lead', text: P.t})
   ]));
@@ -802,13 +703,14 @@ function risultato(R) {
     media: 'Il metodo che usi ti ha portato fin qui, e con qualche cambio ti porta fino al ' + a.nome + '. Nella prossima live ti facciamo vedere quali.',
     bassa: 'I conti tornano e la prova lo conferma. Se vuoi capire come usare le ore che ti avanzano, ne parliamo nella prossima live.'
   };
-  var link = EVENTO + '?utm_source=quizfunnel&utm_medium=quiz&utm_campaign=test-97-secondi&utm_content=urgenza-' + R.urgenza;
+  /* utm_term porta il risultato a Leadfather tramite il modulo di /evento/ */
+  var term = 'p' + R.profilo + '-' + R.pilastro + '-' + R.punti + 'su18-cop' + R.copertura;
+  var link = EVENTO + '?utm_source=quizfunnel&utm_medium=quiz&utm_campaign=test-97-secondi&utm_content=urgenza-' + R.urgenza + '&utm_term=' + encodeURIComponent(term);
   var bn = el('div', {class: 'blocco'}, [
     el('p', {class: 'occhiello', text: 'Cosa facciamo noi'}),
     el('p', {text: testi[R.urgenza]}),
     el('a', {class: 'btn', href: link, text: 'Iscriviti alla live'})
   ]);
-  if (R.urgenza === 'alta') bn.appendChild(el('p', {class: 'nota', text: 'Nelle prossime ore ti scriviamo anche su WhatsApp, per guardare il tuo risultato insieme.'}));
   blocchi.push(bn);
 
   schermo(blocchi, 1);
